@@ -36,6 +36,7 @@ AC_CONFIG_FILES([
   examples/queen/Makefile
   examples/solitare/Makefile
   examples/bddsupportbug/Makefile
+  examples/bddsatcountbug/Makefile
 ])
 
 AC_OUTPUT

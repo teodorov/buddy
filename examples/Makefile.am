@@ -10,4 +10,5 @@ SUBDIRS = \
  money \
  queen \
  solitare \
- bddsupportbug
+ bddsupportbug \
+ bddsatcountbug
