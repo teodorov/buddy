@@ -2061,13 +2061,16 @@ BDD bdd_support(BDD r)
    int res=1;
 
    CHECKa(r, bddfalse);
-   
+
+   /* Variable sets are conjunctions, so the empty support is bddtrue.  */
    if (r < 2)
-      return bddfalse;
+      return bddtrue;
 
       /* On-demand allocation of support set */
    if (supportSize < bddvarnum)
    {
+     if (supportSet)
+       free(supportSet);
      if ((supportSet=(int*)malloc(bddvarnum*sizeof(int))) == NULL)
      {
        bdd_error(BDD_MEMORY);
