@@ -6,6 +6,12 @@
 x  means bugfix or changed code
 -  means removed code
 
+VER 2.4 (July 2004)
+-------------------
+  + Using configure script for the build process.
+  + Adding runregression script which runs examples and compare to 
+    expected results.
+
 VER 2.3 (June 2004)
 -------------------
   + Nothing :-(  This is just the first version in SourceForge, 
