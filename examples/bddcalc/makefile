@@ -41,5 +41,5 @@ bddlib:
 clean:
 	rm -f *~ examples/*~
 	rm -f *.o
-	rm -f bddcalc parser.cxx lexer.cxx
+	rm -f bddcalc parser.cxx lexer.cxx tokens.h
 
