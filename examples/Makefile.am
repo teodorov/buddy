@@ -9,4 +9,5 @@ SUBDIRS = \
  milner \
  money \
  queen \
- solitare
+ solitare \
+ bddsupportbug

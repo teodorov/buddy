@@ -35,6 +35,7 @@ AC_CONFIG_FILES([
   examples/money/Makefile
   examples/queen/Makefile
   examples/solitare/Makefile
+  examples/bddsupportbug/Makefile
 ])
 
 AC_OUTPUT
