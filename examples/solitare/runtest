@@ -1,0 +1,3 @@
+#!/bin/tcsh -f
+
+./solitare | egrep -v '^Garbage collection' > result
