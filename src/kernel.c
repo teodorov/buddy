@@ -414,7 +414,7 @@ DESCR {* Whenever an error occurs in the bdd package a test is done to
 	This function sets the handler to be {\tt handler}. If a {\tt NULL}
 	argument is supplied then no calls are made when an error occurs.
 	Possible error codes are found in {\tt bdd.h}. The default handler
-	is {\tt bdd\_default\_errhandler} which will use {\tt exit()} to
+	is {\tt bdd\_default\_errhandler} which will use {\tt abort()} to
 	terminate the program.
 
 	Any handler should be defined like this:
@@ -803,7 +803,7 @@ const char *bdd_errstring(int e)
 void bdd_default_errhandler(int e)
 {
    fprintf(stderr, "BDD error: %s\n", bdd_errstring(e));
-   exit(1);
+   abort();
 }
 
 
