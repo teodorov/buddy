@@ -40,7 +40,7 @@
 #include "prime.h"
 
 
-#define Random(i) ( (rand() % (i)) + 1 )
+#define Random(i) ( (lrand48() % (i)) + 1 )
 #define isEven(src) (!((src) & 0x1))
 #define hasFactor(src,n) ( (((src)!=(n)) && ((src)%(n) == 0)) )
 #define BitIsSet(src,b) ( ((src) & (1<<(b))) != 0 )
@@ -299,7 +299,7 @@ int main()
 {
   int n;
 
-  srand(time(NULL));
+  srand48(time(NULL));
 
   for (n=0 ; n<1000 ; ++n)
   {

@@ -175,6 +175,8 @@ int bdd_init(int initnodesize, int cs)
 {
    int n, err;
    
+   srand48( SRAND48SEED ) ;
+
    if (bddrunning)
       return bdd_error(BDD_RUNNING);
    

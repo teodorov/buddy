@@ -118,6 +118,7 @@ extern bddCacheStat bddcachestats;
 
 #define MAXVAR 0x1FFFFF
 #define MAXREF 0x3FF
+#define SRAND48SEED 0xbeef
 
    /* Reference counting */
 #define DECREF(n) if (bddnodes[n].refcou!=MAXREF && bddnodes[n].refcou>0) bddnodes[n].refcou--

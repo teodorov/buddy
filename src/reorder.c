@@ -123,7 +123,7 @@ static int  reorder_vardown(int);
 static int  reorder_init(void);
 static void reorder_done(void);
 
-#define random(a) (rand() % (a))
+#define random(a) (lrand48() % (a))
 
    /* For sorting the blocks according to some specific size value */
 typedef struct s_sizePair
