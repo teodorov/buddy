@@ -13,7 +13,7 @@
 #define IMPLEMENTSLIST /* Special for list template handling */
 #include "slist.h"
 #include "hashtbl.h"
-#include "parser.h"
+#include "parser_.h"
 
    /* Definitions for storing and caching of identifiers */
 #define inputTag  0
@@ -117,7 +117,7 @@ actions:
    ;
 
 actionSeq:
-   action T_semi actionSeq
+   actionSeq action T_semi
    | action T_semi
    ;
 
@@ -157,7 +157,7 @@ quantifier:
    ;
 
 varlist:
-   T_id varlist { actQuantVar2(&$$,&$1,&$2); }
+   varlist T_id { actQuantVar2(&$$,&$2,&$1); }
    | T_id       { actQuantVar1(&$$,&$1); }
    ;
 
