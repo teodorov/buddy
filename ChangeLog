@@ -1,6 +1,10 @@
+2004-07-23  haimcohen  <haimcohen@users.sourceforge.net>
+
+	* README 1.4: Rephrasing
+
 2004-07-22  haimcohen  <haimcohen@users.sourceforge.net>
 
-	* NEWS 1.2, ChangeLog 1.4: *** empty log message ***
+	* ChangeLog 1.5, NEWS 1.2: *** empty log message ***
 
 	* examples/solitare/Makefile.am 1.3, examples/solitare/expected 1.2, examples/solitare/runtest 1.2:
 	Solitare will not be included in the regression since it takes too much time to run
