@@ -266,6 +266,8 @@ void bdd_done(void)
    bddnodes = NULL;
    bddrefstack = NULL;
    bddvarset = NULL;
+   bddvar2level = NULL;
+   bddlevel2var = NULL;
 
    bdd_operator_done();
 

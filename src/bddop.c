@@ -204,6 +204,7 @@ void bdd_operator_done(void)
 {
    if (quantvarset != NULL)
       free(quantvarset);
+   quantvarset = NULL;
    
    BddCache_done(&applycache);
    BddCache_done(&itecache);
@@ -214,6 +215,7 @@ void bdd_operator_done(void)
 
    if (supportSet != NULL)
      free(supportSet);
+   supportSet = NULL;
 }
 
 
