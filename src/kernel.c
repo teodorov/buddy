@@ -38,6 +38,7 @@
            as makenode may resize/move the nodetable.
 
 *************************************************************************/
+#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -669,8 +670,7 @@ ALSO    {* bdd\_versionnum *}
 */
 char *bdd_versionstr(void)
 {
-   static char str[100];
-   sprintf(str, "BuDDy -  release %d.%d", VERSION/10, VERSION%10);
+   static char str[] = "BuDDy -  release " PACKAGE_VERSION;
    return str;
 }
 
@@ -686,7 +686,7 @@ ALSO    {* bdd\_versionstr *}
 */
 int bdd_versionnum(void)
 {
-   return VERSION;
+   return MAJOR_VERSION * 10 + MINOR_VERSION;
 }
 
 
