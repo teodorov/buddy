@@ -104,9 +104,9 @@ void test1()
   bdd set = bddtrue;
   for (i=0 ; i<50 ; ++i)
   {
-    int v = rand() % varnum;
-    int s = rand() % 2;
-    int o = rand() % 2;
+    int v = lrand48() % varnum;
+    int s = lrand48() % 2;
+    int o = lrand48() % 2;
     
     if (o == 0)
     {
