@@ -14,11 +14,11 @@
 #include "slist.h"
 #include "hashtbl.h"
 #include "parser.h"
-   
+
    /* Definitions for storing and caching of identifiers */
 #define inputTag  0
 #define exprTag   1
-   
+
    struct nodeData
    {
       nodeData(const nodeData &d) { tag=d.tag; name=sdup(d.name); val=d.val; }
@@ -37,7 +37,7 @@
    int linenum;
 
    bddgbchandler gbcHandler = bdd_default_gbchandler;
-   
+
       /* Prototypes */
 void actInit(token *nodes, token *cache);
 void actInputs(void);
@@ -46,7 +46,7 @@ void actAssign(token *id, token *expr);
 void actOpr2(token *res, token *left, token *right, int opr);
 void actNot(token *res, token *right);
 void actId(token *res, token *id);
-void actConst(token *res, int); 
+void actConst(token *res, int);
 void actSize(token *id);
 void actDot(token *fname, token *id);
 void actAutoreorder(token *times, token *method);
@@ -57,30 +57,30 @@ void actForall(token *res, token *var, token *expr);
 void actQuantVar2(token *res, token *id, token *list);
 void actQuantVar1(token *res, token *id);
 void actPrint(token *id);
- 
+
 %}
 
 /*************************************************************************
    Token definitions
 *************************************************************************/
 
-%token T_id, T_str, T_intval, T_true, T_false
+%token T_id T_str T_intval T_true T_false
 
-%token T_initial, T_inputs, T_actions
-%token T_size, T_dumpdot
-%token T_autoreorder, T_reorder, T_win2, T_win2ite, T_sift, T_siftite, T_none
-%token T_cache, T_tautology, T_print
+%token T_initial T_inputs T_actions
+%token T_size T_dumpdot
+%token T_autoreorder T_reorder T_win2 T_win2ite T_sift T_siftite T_none
+%token T_cache T_tautology T_print
 
-%token T_lpar, T_rpar
+%token T_lpar T_rpar
 %token T_equal
-%token T_semi, T_dot
+%token T_semi T_dot
 
-%right T_exist, T_forall, T_dot
+%right T_exist T_forall T_dot
 %left T_biimp
 %left T_imp
-%left T_or, T_nor
+%left T_or T_nor
 %left T_xor
-%left T_nand, T_and
+%left T_nand T_and
 %right T_not
 
 /*************************************************************************
@@ -212,7 +212,7 @@ int main(int ac, char **av)
 {
    using namespace std ;
    int c;
-   
+
    while ((c=getopt(ac, av, "hg")) != EOF)
    {
       switch (c)
@@ -225,7 +225,7 @@ int main(int ac, char **av)
 	 break;
       }
    }
-   
+
    if (optind >= ac)
       usage();
 
@@ -242,7 +242,7 @@ int main(int ac, char **av)
 
    bdd_printstat();
    bdd_done();
-   
+
    return 0;
 }
 
@@ -279,7 +279,7 @@ void actInputs(void)
    {
       if (names.exists((*i).name))
 	 yyerror("Redefinition of input %s", (*i).name);
-      
+
       (*i).val = bdd_ithvar(vnum);
       hashData hd((*i).name, 0, &(*i));
       names.add(hd);
@@ -299,7 +299,7 @@ void actAssign(token *id, token *expr)
 {
    if (names.exists(id->id))
       yyerror("Redefinition of %s", id->id);
-   
+
    nodeData *d = new nodeData(exprTag, sdup(id->id), *expr->bval);
    hashData hd(d->name, 0, d);
    names.add(hd);
