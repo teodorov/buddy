@@ -1,3 +1,30 @@
+2004-07-29  haimcohen  <haimcohen@users.sourceforge.net>
+
+	* configure.ac, examples/Makefile.am, examples/bddsupportbug/.cvsignore, examples/bddsupportbug/Makefile.am, examples/bddsupportbug/bddsupportbug.cxx, examples/bddsupportbug/expected, examples/bddsupportbug/runtest:
+	Adding a regression test to verify the bug fix of the bug in the
+	returned value of bdd_support when argument is constant bdd
+
+	* examples/cmilner/.cvsignore, examples/fdd/.cvsignore:
+	Adding obvious files which should not be in CVS
+
+	* src/bddop.c:
+	Applying a patch submitted by Alexandre Duret-Lutz:
+
+	This fix two things in bdd_support()
+
+	1) A memory leak, which I believe is clear enough.
+	2) The return value when bdd_support() is called on bddtrue or bddfalse.
+	   Since variable sets are conjunctions (i.e., the union of variables
+	   sets is &), the empty set should be TRUE, not FALSE.  For instance
+	   we should have
+	     bdd_support(formula1 | formula2)
+	       == bdd_support(formula1) & bdd_support(formula2)
+	   In BuDDy 2.4 this fails if any of the two formulae is a constant.
+
+2004-07-25  haimcohen  <haimcohen@users.sourceforge.net>
+
+	* ChangeLog: *** empty log message ***
+
 2004-07-23  haimcohen  <haimcohen@users.sourceforge.net>
 
 	* ChangeLog: *** empty log message ***
