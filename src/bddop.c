@@ -1430,7 +1430,7 @@ SECTION {* operator *}
 SHORT   {* coudert and Madre's restrict function *}
 PROTO   {* BDD bdd_simplify(BDD f, BDD d) *}
 DESCR   {* Tries to simplify the BDD {\tt f} by restricting it to the
-           domaine covered by {\tt d}. No checks are done to see if the
+	   domain covered by {\tt d}. No checks are done to see if the
 	   result is actually smaller than the input. This can be done
 	   by the user with a call to {\tt bdd\_nodecount}. *}
 ALSO    {* bdd\_restrict *}
@@ -2357,12 +2357,12 @@ static int fullsatone_rec(int r)
 NAME    {* bdd\_allsat *}
 SECTION {* operator *}
 SHORT   {* finds all satisfying variable assignments *}
-PROTO   {* BDD bdd_satone(BDD r, bddallsathandler handler) *}
+PROTO   {* BDD bdd_allsat(BDD r, bddallsathandler handler) *}
 DESCR   {* Iterates through all legal variable assignments (those
-           that make the BDD come true) for the  bdd {\tt r} and
+	   that make the BDD come true) for the  bdd {\tt r} and
 	   calls the callback handler {\tt handler} for each of them.
 	   The array passed to {\tt handler} contains one entry for
-	   each of the globaly defined variables. Each entry is either
+	   each of the globally defined variables. Each entry is either
 	   0 if the variable is false, 1 if it is true, and -1 if it
 	   is a don't care.
 
