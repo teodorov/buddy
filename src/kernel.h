@@ -92,7 +92,7 @@ typedef struct s_BddNode /* Node table entry */
 #ifdef CPLUSPLUS
 extern "C" {
 #endif
-   
+
 extern int       bddrunning;         /* Flag - package initialized */
 extern int       bdderrorcond;       /* Some error condition was met */
 extern int       bddnodesize;        /* Number of allocated nodes */
@@ -108,11 +108,11 @@ extern jmp_buf   bddexception;
 extern int       bddreorderdisabled;
 extern int       bddresized;
 extern bddCacheStat bddcachestats;
-   
+
 #ifdef CPLUSPLUS
 }
 #endif
-   
+
 
 /*=== KERNEL DEFINITIONS ===============================================*/
 
@@ -165,7 +165,12 @@ extern bddCacheStat bddcachestats;
 #define BDDZERO 0
 
 #ifndef CLOCKS_PER_SEC
-#define CLOCKS_PER_SEC DEFAULT_CLOCK
+  /* Pass `CPPFLAGS=-DDEFAULT_CLOCK=1000' as an argument to ./configure
+     to override this setting.  */
+# ifndef DEFAULT_CLOCK
+#  define DEFAULT_CLOCK 60
+# endif
+# define CLOCKS_PER_SEC DEFAULT_CLOCK
 #endif
 
 #define DEFAULTMAXNODEINC 50000
@@ -180,7 +185,7 @@ extern bddCacheStat bddcachestats;
 #ifdef CPLUSPLUS
 extern "C" {
 #endif
-   
+
 extern int    bdd_error(int);
 extern int    bdd_makenode(unsigned int, int, int);
 extern int    bdd_noderesize(int);
