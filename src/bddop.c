@@ -238,6 +238,10 @@ void bdd_operator_varresize(void)
 
    memset(quantvarset, 0, sizeof(int)*bddvarnum);
    quantvarsetID = 0;
+
+   /* Bug fix: */
+   /* After changing number of vars, satcount results are no longer valid. */
+   BddCache_reset(&misccache);
 }
 
 
