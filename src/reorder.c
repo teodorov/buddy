@@ -812,7 +812,7 @@ static void addref_rec(int r, char *dep)
    if (r < 2)
       return;
    
-   if (bddnodes[r].refcou == 0 && !MARKED(r))
+   if (bddnodes[r].refcou == 0 || MARKED(r))
    {
       bddfreenum--;
 
