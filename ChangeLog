@@ -1,6 +1,17 @@
+2004-07-21  haimcohen  <haimcohen@users.sourceforge.net>
+
+	* examples/bddcalc/expected 1.2: *** empty log message ***
+
+	* src/depend.inf 1.2:
+	we do not need this file anymore since autotools are being used
+
+	* examples/solitare/Makefile.am 1.2: readme was added to distribution
+
+	* doc/Makefile.am 1.2: buddy.ps and tech.txt were added to distribution
+
 2004-07-14  haimcohen  <haimcohen@users.sourceforge.net>
 
-	* tools/.cvsignore 1.1: *** empty log message ***
+	* ChangeLog 1.2, tools/.cvsignore 1.1: *** empty log message ***
 
 	* examples/solitare/expected 1.1:
 	This file is empty in purpose. The solitare test takes too much memory

@@ -1,3 +1,4 @@
+Running with cal file : ./example.cal
 Formula t3 is a tautology!
 
 Cache statistics
@@ -11,6 +12,7 @@ Operator Hits:  0
 Operator Miss:  0
 => Hit rate =   0.00
 Swap count =    0
+Running with cal file : examples/c1355.cal
 Formula t383 is a tautology!
 Formula t394 is a tautology!
 Formula t504 is a tautology!
@@ -55,6 +57,7 @@ Operator Hits:  0
 Operator Miss:  0
 => Hit rate =   0.00
 Swap count =    0
+Running with cal file : examples/c1908.cal
 Formula t476 is a tautology!
 Formula t498 is a tautology!
 Formula t515 is a tautology!
@@ -70,6 +73,7 @@ Operator Hits:  0
 Operator Miss:  0
 => Hit rate =   0.00
 Swap count =    0
+Running with cal file : examples/c2670.cal
 Formula t26 is a tautology!
 Formula t44 is a tautology!
 Formula t68 is a tautology!
@@ -95,6 +99,7 @@ Operator Hits:  0
 Operator Miss:  0
 => Hit rate =   0.00
 Swap count =    0
+Running with cal file : examples/c3540.cal
 Formula t1034 is a tautology!
 Formula t1148 is a tautology!
 Formula t1328 is a tautology!
@@ -127,6 +132,7 @@ Operator Hits:  0
 Operator Miss:  0
 => Hit rate =   0.00
 Swap count =    0
+Running with cal file : examples/c432.cal
 Formula t229 is a tautology!
 Formula t245 is a tautology!
 
@@ -141,6 +147,7 @@ Operator Hits:  0
 Operator Miss:  0
 => Hit rate =   0.00
 Swap count =    0
+Running with cal file : examples/c499.cal
 Formula t161 is a tautology!
 Formula t166 is a tautology!
 Formula t222 is a tautology!
