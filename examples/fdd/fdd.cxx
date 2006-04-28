@@ -6,6 +6,9 @@
  *    0 -> 1 -> 2 -> 3 -> 4 -> 5 -> -> 7 -> 0
  */
 
+#include <iostream>
+#include <cstdlib>
+
 #include "fdd.h"
 
 /* Use the transition relation "transRel" to iterate through the statespace
@@ -72,7 +75,18 @@ int main() {
    }
 
    cout << fddset << "Transition relation: " << T << endl << endl;
-
-      /* Calculate the reachable statespace */
+   
+   // test the printout methods
+   cout << "print to stdout:" << endl ;
+   fdd_printset( T ) ;
+   cout << endl ;
+   FILE* fdd_out = fopen( "fdd_out.txt", "w" ) ;
+   cout << "print to file:" << endl ;
+   fdd_fprintset( fdd_out, T ) ;	
+   fclose( fdd_out ) ;
+   system( "cat fdd_out.txt" ) ; // oh my, i am so lazy ...
+   cout << endl ;
+   
+   /* Calculate the reachable statespace */
    findStateSpace(T);
 }
