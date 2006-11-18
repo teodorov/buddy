@@ -1,0 +1,658 @@
+\documentclass[a4paper,11pt,twoside,fleqn,openright]{report}
+\usepackage{makeidx}
+\usepackage{supertabular}
+\usepackage{epsfig}
+
+\bibliographystyle{plain}
+
+\setlength{\oddsidemargin}{0cm}
+\setlength{\topmargin}{-1cm}
+\setlength{\textwidth}{15cm}
+\setlength{\textheight}{24cm}
+\setlength{\evensidemargin}{1cm}
+\setlength{\oddsidemargin}{1cm}
+\raggedbottom
+
+\newcommand{\conj}     { \wedge }
+\newcommand{\disj}     { \vee }
+
+\newcommand{\fileio}   { File input/output }
+\newcommand{\kernel}   { Kernel BDD operations and data structures }
+\newcommand{\operator} { BDD operators }
+\newcommand{\fdd}      { Finite domain variable blocks }
+\newcommand{\info}     { Information on BDDs }
+\newcommand{\reorder}  { Variable reordering }
+\newcommand{\bvec}     { Boolean vectors }
+\newcommand{\tuple}[1] {\langle#1\rangle}
+
+\newcommand{\afsnit}   {\vspace{\parsep}\vspace{\baselineskip}\noindent}
+
+\newenvironment{Ill}
+  {\\[\abovedisplayskip]\indent \begin{minipage}{\textwidth}}
+  {\end{minipage} \\[\belowdisplayskip]}
+
+\newenvironment{Illxx}
+  {\\[\abovedisplayskip] \begin{minipage}{\textwidth} \begin{quote}}
+  {\end{quote} \end{minipage} \\[\belowdisplayskip]}
+
+\newenvironment{Illu}
+  {\\[\abovedisplayskip] \begin{minipage}{\textwidth} \begin{quote}}
+  {\end{quote} \end{minipage}}
+
+
+\makeindex
+
+\begin{document}
+
+\begin{titlepage}
+  \begin{center}
+    \vspace{1in}
+    {\Large BuDDy: Binary Decision Diagram package\\Release 2.2}\\[1em]
+    {\large J\o{}rn Lind-Nielsen\\
+    IT-University of Copenhagen (ITU)\\
+    e-mail: {\tt buddy@itu.dk}\\
+    \today}
+
+    \vspace{1in}
+    \input{example.pstex_t}
+  \end{center}
+\end{titlepage}
+
+\pagestyle{empty}
+\cleardoublepage
+\pagenumbering{roman}
+\pagestyle{plain}
+\tableofcontents
+
+% ==========================================================================
+\chapter{Introduction}
+
+BuDDy is a Binary Decision Diagram package that provides all of the
+most used functions for manipulating BDDs. The package also includes
+functions for integer arithmetics such as addition and relational
+operators.
+
+BuDDy started as a technology transfer project between the Technical
+University of Denmark and Bann Visualstate. The later is now using the
+techniques from BuDDy in their software. See {\tt
+  www.visualstate.com}.
+
+This manual describes only the interface to BuDDy, not the underlying
+theory of BDDs. More information about that can be found in Henrik
+Reif Andersen's ``An Introduction To Binary Decision Diagrams'' which
+is supplied with the BuDDY distribution. Even more information can of
+course be found in the original papers by Bryant, Rudell and
+Brace~\cite{bryant-1986-gba, bryant-1990-eib, bryant-1992-sbm,
+  rudell-1993-dvo}
+
+\section{Acknowledgements}
+
+Thanks to the following people for new ideas, bug hunts and lots of
+discussions: Gerd Behrmann, Henrik Reif Andersen, Ken Larsen, Jacob
+Lichtenberg, Poul Williams, Nikolaj Bjorner, Alan Mishchenko, Henrik
+Hulgaard, and Malte Helmert.
+
+
+% ==========================================================================
+\pagenumbering{arabic}
+\chapter{Users Guide}
+
+
+% --------------------------------------------------------------------------
+\section{Getting BuDDy}
+
+BuDDy can be found on the server {\tt http://www.itu.dk/research/buddy}.
+
+
+% --------------------------------------------------------------------------
+\section{Installing} \index{installing}
+
+\begin{enumerate}
+\item Edit the file "config" to specify your compiler and install options.
+  
+\item Type {\tt make} to make the binary.
+  
+\item Type {\tt make install} to copy the BDD files to their appropriate
+  directories
+
+\item Type {\tt make examples} to make the examples
+
+\end{enumerate}
+
+
+% --------------------------------------------------------------------------
+\section{Compiling} \index{compiling}
+
+This is rather simple. Just inform the compiler of where the binaries
+and include files are installed. With Gnu C this is done with the {\tt
+  -I} and {\tt -L} options.  Assuming that the binary library {\tt
+  libbdd.a} is installed in {\tt /usr/local/lib} and the include file
+{\tt bdd.h} is installed in {\tt /usr/local/include}, then the compile
+command should be
+%
+\begin{Ill}
+  {\tt cc -I/usr/local/include myfile.c -o myfile -L/usr/include/lib -lbdd}
+\end{Ill}
+%
+If the above directories are included in your search path already, then
+you might be able to reduce the command to
+%
+\begin{Illu}
+  {\tt cc myfile.c -o myfile -lbdd}
+\end{Illu}
+
+
+% --------------------------------------------------------------------------
+\section{Programming with BuDDy} \index{programming examples}
+
+First of all a program needs to call {\tt
+  bdd\_init(nodenum,cachesize)} to initialize the BDD package. The
+{\tt nodenum} parameter sets the initial number of BDD nodes and {\tt
+  cachesize} sets the size of the caches used for the BDD operators (not the
+unique node table). These caches are used for {\tt bdd\_apply} anmong others.
+
+Good initial values are
+\\[\abovedisplayskip]
+
+\begin{tabular}{lrr}
+  {\bf Example} & {\bf nodenum} & {\bf cachesize} \\
+  Small test examples & 1000 & 100 \\
+  Small examples & 10000 & 1000 \\
+  Medium sized examples & 100000 & 10000 \\
+  Large examples & 1000000 & variable \\
+\end{tabular}\\
+
+\noindent
+Too few nodes will only result in reduced performance as this
+increases the number of garbage collections needed. If the package
+needs more nodes, then it will automatically increase the size of the
+node table.  Use {\tt bdd\_setminfreenodes} to change the parameters
+for when this is done and use {\tt bdd\_setcacheratio} to enable
+dynamical resizing of the operator caches. You may also use the
+function {\tt bdd\_setmaxincrease} to adjust how BuDDy resizes the
+node table.
+
+After the initialization a call must be done to {\tt bdd\_setvarnum}
+to define how many variables to use in this session. This number may
+be increased later on either by calls to {\tt bdd\_setvarnum} or to
+{\tt bdd\_extvarnum}.
+
+The atomic functions for getting new BDD nodes are {\tt
+  bdd\_ithvar(i)} and {\tt bdd\_nithvar(i)} which returns references
+to BDD nodes of the form $(v_i,0,1)$ and $(v_i,1,0)$. The nodes
+constructed in this way corresponds to the positive and negative
+versions of a single variable.  Initially the variable order is $v_0 <
+v_1 < \ldots < v_{n-1} < v_n$.
+  
+The BDDs returned from {\tt bdd\_ithvar(i)} can then be used to form
+new BDDs by calling {\tt bdd\_apply(a,b,op)} where {\tt op} may be
+{\tt bddop\_and} or any of the other operators defined in {\tt bdd.h}.
+The apply function performs the binary operation indicated by {\tt
+  op}.  Use {\tt bdd\_not} to negate a BDD.  The result from {\tt
+  bdd\_apply} and any other BDD operator {\em must} be handed over to
+{\tt bdd\_addref} to increase the reference count of the node before
+any other operation is performed.  This is done to prevent the BDD
+from being garbage collected. When a BDD is no longer in use, it can
+be de-referenced by a call to {\tt bdd\_delref}.  The exceptions to
+this are the return values from {\tt bdd\_ithvar} and {\tt
+  bdd\_nithvar}. These do not need to be reference counted, although
+it is not an error to do so. The use of the BDD package ends with a
+call to {\tt bdd\_done}. See the figures~\ref{fig:cinterface} and
+\ref{fig:cppinterface} for an example.
+
+\begin{figure}[tb]
+%\begin{Ill}
+\begin{verbatim}
+#include <bdd.h>
+
+main(void)
+{
+   bdd x,y,z;
+
+   bdd_init(1000,100);
+   bdd_setvarnum(5);
+
+   x = bdd_ithvar(0);
+   y = bdd_ithvar(1);
+   z = bdd_addref(bdd_apply(x,y,bddop_and));
+
+   bdd_printtable(z);
+   bdd_delref(z);
+   bdd_done();
+}
+\end{verbatim}
+%\end{Ill}
+  \caption{Standard C interface to BuDDy. In this mode both 'bdd' and
+    'BDD' can be used as BuDDy BDD types. The C interface requires the
+    user to ensure garbage collection is handled correctly. This means
+    calling 'bdd\_addref' every time a new BDD is created, and
+    'bdd\_delref' whenever a BDD is not in use anymore.}
+  \label{fig:cinterface}
+\end{figure}
+
+\begin{figure}[tb]
+%\begin{Ill}
+\begin{verbatim}
+#include <bdd.h>
+
+main(void)
+{
+   bdd x,y,z;
+
+   bdd_init(1000,100);
+   bdd_setvarnum(5);
+
+   x = bdd_ithvar(0);
+   y = bdd_ithvar(1);
+   z = x & y;
+
+   cout << bddtable << z << endl;
+
+   bdd_done();
+}
+\end{verbatim}
+%\end{Ill}
+  \caption{C++ interface to BuDDy. In this mode 'bdd' is a C++ class
+    that wraps a handler around the standard C interface, and the
+    'BDD' type referes to the standard C BDD type. The C++ interface
+    handles all garbage collection, so no calls to 'bdd\_addref' and
+    'bdd\_delref' are needed.}
+  \label{fig:cppinterface}
+\end{figure}
+
+Information on the BDDs can be found using the {\tt bdd\_var}, {\tt
+  bdd\_low} and {\tt bdd\_high} functions that returns the variable
+labelling a BDD, the low branch and the high branch of a BDD.
+
+Printing BDDs is done using the functions {\tt bdd\_printall} that
+prints {\em all} used nodes, {\tt bdd\_printtable} that prints the
+part of the nodetable that corresponds to a specific BDD and {\tt
+  bdd\_printset} that prints a specific BDD as a list of elements in
+a set (all paths ending in the true terminal).
+
+\subsection{More Examples}
+
+More complex examples can be found in the {\tt buddy/examples} directory.
+
+% --------------------------------------------------------------------------
+\section{Variable sets} \index{variable sets}
+
+For some functions like {\tt bdd\_exist} it is possible to pass a
+whole set of variables to be quantified, using BDDs that represent the
+variables. These BDDs are simply the conjunction of all the variables
+in their positive form and can either be build that way or by a call
+to {\tt bdd\_makeset}. For the {\tt bdd\_restrict} function the
+variables need to be included in both positive and negative form which
+can only be done manually.
+
+If for example variable 1 and variable 3 are to be included in a set,
+then it can be done in two ways, as shown in figure~\ref{fig:varset}.
+
+\begin{figure}[tb]
+\begin{verbatim}
+#include <bdd.h>
+
+main()
+{
+   bdd v1, v3;
+   bdd seta, setb;
+   static int v[2] = {1,3};
+   
+   bdd_init(100,100);
+   bdd_setvarnum(5);
+
+   v1 = bdd_ithvar(1);
+   v3 = bdd_ithvar(3);
+
+      /* One way */
+   seta = bdd_addref( bdd_apply(v1,v3,bddop_and) );
+   bdd_printtable(seta);
+
+      /* Another way */
+   setb = bdd_addref( bdd_makeset(v,2) );
+   bdd_printtable(setb);
+}
+\end{verbatim}
+  \caption{Two ways to create a variable set.}
+  \label{fig:varset}
+\end{figure}
+
+
+% --------------------------------------------------------------------------
+\section{Dynamic Variable Reordering} \index{reordering}
+\index{variable reordering} \index{dynamic variable reordering}
+
+\begin{figure}
+  \begin{center}
+    \input{varblock.pstex_t}
+    \caption{The variable tree for the variable blocks $v_0\ldots v_9$,
+      $v_1\ldots v_8$, $v_1\ldots v_4$, $v_5\ldots v_8$, $v_1$, $v_2$,
+      $v_3$ and $v_4$.}
+    \label{fig:vartree}
+  \end{center}
+\end{figure}
+
+Dynamic variable reordering can be done using the functions {\tt
+  bdd\_reorder(int method)} and {\tt bdd\_autoreorder(int method)}.
+Where the parameter {\tt method}, for instance can be {\tt
+  BDD\_REORDER\_WIN2ITE}.  The package must know how the BDD variables
+are related to each other, so the user must define blocks of BDD
+variables, using {\tt bdd\_addvarblock(bdd var, int fixed)}. A block
+is a range of BDD variables that should be kept together. It may
+either be a simple contiguous sequence of variables or a sequence of
+other blocks with ranges inside their parents range. In this way all
+the blocks form a tree of ranges. Partially overlapping blocks are not
+allowed.
+
+Example: Assume the block $v_0\ldots v_9$, is added as the first block
+and then the block $v_1\ldots v_8$. This yields the $v_0\ldots v_9$
+block at the top, with the $v_1\ldots v_8$ block as a child. If now
+the block $v_1\ldots v_4$ was added, it would become a child of the
+$v_1\ldots v_8$ block, similarly the block $v_5\ldots v_8$ would be a
+child of the $v_1\ldots v_8$ block. If we add the variables $v_1$,
+$v_2$, $v_3$ and $v_4$ as single variable blocks we at last get tree
+showed in figure~\ref{fig:vartree}. If all variables should be added
+as single variable blocks then {\tt bdd\_varblockall} can be used
+instead of doing it manually.
+
+The reordering algorithm is then to first reorder the top most blocks
+and there after descend into each block and reorder these recursively
+- unless the block is defined as a fixed block.
+
+If the user want to control the swapping of variables himself, then
+the functions {\tt bdd\_swapvar} {\tt bdd\_setvarorder} may be used.
+But this is not possible in conjunction with the use of variable
+blocks and the {\tt bdd\_swapvar} is unfortunately quite slow since a
+full scan of all the nodes must be done both before and after the
+swap. Other reordering functions are {\tt bdd\_autoreorder\_times},
+{\tt bdd\_reorder\_verbose}, {\tt bdd\_sizeprobe\_hook} and {\tt
+  bdd\_reorder\_hook}.
+
+
+% --------------------------------------------------------------------------
+\section{Error Handling} \index{error handling}
+
+If an error occurs then a check is done to see if there is any error
+handler defined and if so it is called with the error code of
+interest. The default error handler prints an error message on {\tt
+  stderr} and then aborts the program. A handler can also be defined
+by the user with a call to {\tt bdd\_error\_hook}.
+  
+  
+% --------------------------------------------------------------------------
+\section{The C++ interface} \index{C++ interface}
+
+Mostly this consists of a set of overloaded function wrappers that
+takes a {\tt bdd} class and calls the appropriate C functions with the
+root number stored in the {\tt bdd} class. The names of these wrappers
+are exactly the same as for the C functions. In addition to this a lot
+of the C++ operators like {\verb | \& - = ==} are overloaded in order
+to perform most of the {\tt bdd\_apply()} operations. These are listed
+together with {\tt bdd\_apply}. The rest are\\
+
+\begin{tabular}{lll}
+     {\bf Operator} & {\bf Description} & {\bf Return value}\\
+     {\tt =}  & assignment \\
+     {\tt ==} & test & returns 1 if two BDDs are equal, otherwise 0 \\
+     {\tt !=} & test & returns 0 if two BDDs are equal, otherwise 1 \\
+     {\tt bdd.id() } & identity & returns the root number of the BDD \\
+\end{tabular}
+
+\afsnit The default constructor for the {\tt bdd} class initializes
+the bdds to the constant false value.  Reference counting is totally
+automatic when the {\tt bdd} class is used, here the constructors and
+destructors takes care of {\em all} reference counting!  The C++
+interface is also defined in {\tt bdd.h} so nothing extra is needed to
+use it.
+
+
+% --------------------------------------------------------------------------
+\section{Finite Domain Blocks} \index{finite domain blocks}
+
+Included in the BDD package is a set of functions for manipulating
+values of finite domains, like for example finite state machines.
+These functions are used to allocate blocks of BDD variables to
+represent integer values instead of only true and false.
+
+New finite domain blocks are allocated using {\tt fdd\_extdomain} and
+BDDs representing integer values can be build using {\tt fdd\_ithvar}.
+The BDD representing identity between two sets of different domains
+can be build using {\tt fdd\_equals}. BDDs representing finite domain
+sets can be printed using {\tt fdd\_printset} and the overloaded C++
+operator {\tt <<}. Pairs for {\tt bdd\_replace} can be made using {\tt
+  fdd\_setpair} and variable sets can be made using {\tt fdd\_ithset}
+and {\tt fdd\_makeset}. The finite domain block interface is defined
+for both C and C++. To use this interface you must include {\tt "fdd.h"}.
+
+Encoding using FDDs are done with the Least Significant Bits first in
+the ordering (top of the BDD). Assume variables $V_0 \ldots V_3$ are
+used to encode the value $12$ - this would yield $V_0=0 , V_1=0 ,
+V_2=1 , V_3=1$.
+
+An example program using the FDD interface can be found in the
+examples directory.
+
+
+% --------------------------------------------------------------------------
+\section{Boolean Vectors} \index{Boolean Vectors}
+
+\index{arithmetic} Another interface layer for BuDDy implements
+boolean vectors for use with integer arithmetics. A boolean vector is
+simply an array of BDDs where each BDD represents one bit of an
+expression. To use this interface you must include {\tt "bvec.h"}. As
+an example, suppose we want to express the following assignment from
+an expression
+\[
+  x := y + 10
+\]
+\index{addition} what we do is to encode the variable $y$ and the
+value $10$ as boolean vectors $y$ and $v$ of a fixed length. Assume we
+use four bits with LSB to the right, then we get
+\[
+  y = \tuple{y_4, \ldots, y_1}
+\]
+\[
+  v = \tuple{1,0,1,0}
+\]
+where each $y_i$ is the BDD variable used to encode the integer
+variable $y$. Now the result of the addition can be expressed as the
+vector $z = \tuple{z_4, \ldots, z_1}$ where each $z_i$ is:
+\[
+  z_i = y_i\ \mbox{xor}\ v_i\ \mbox{xor}\ c_{i-1}
+\]
+and the carry in $c_i$ is
+\[
+  c_i = (y_i\ \mbox{and}\ v_i)\ \mbox{or}\ (c_{i-1}\ \mbox{and}
+        \ (y_i\ \mbox{or}\ v_i)).
+\]
+with $c_0$ = 0. What is left now is to assign the result to $x$. This
+is a conjunction of a biimplication of each element in the vectors, so
+the result is
+\[
+  R = \bigwedge_{i=1}^4 x_i \Leftrightarrow z_i.
+\]
+The above example could be carried out with the following C++ program
+that utilizes the FDD interface for printing the result.
+\begin{verbatim}
+#include "bvec.h"
+
+main()
+{
+   int domain[2] = {16,16};
+
+   bdd_init(100,100);
+   fdd_extdomain(domain, 2);
+
+   bvec y = bvec_varfdd(0);
+   bvec v = bvec_con(4, 10);
+   bvec z = bvec_add(y, v);
+
+   bvec x = bvec_varfdd(1);
+   bdd  result = bddtrue;
+   
+   for (int n=0 ; n<x.bitnum() ; n++)
+      result &= bdd_apply(x[n], z[n], bddop_biimp);
+
+   cout << fddset << result << endl << endl;
+}
+\end{verbatim}
+
+\noindent
+The relational operators $<,>,\leq,\geq,=,\neq$ can also be
+encoded. Assume we want to encode $x \leq y$ using the same
+variables as in the above example. This would be done as:
+\begin{verbatim}
+#include "bvec.h"
+
+main()
+{
+   int domain[2] = {16,16};
+
+   bdd_init(100,100);
+   fdd_extdomain(domain, 2);
+
+   bvec y = bvec_varfdd(1);
+   bvec x = bvec_varfdd(0);
+
+   bdd  result = bvec_lte(x,y);
+
+   cout << fddset << result << endl << endl;
+}
+\end{verbatim}
+%
+Please note that all vectors that are returned from any of the {\tt
+  bvec\_xxx} functions are referenced counted by the system.
+
+\subsection{C++ Interface}
+
+The C++ interface defines the class
+\begin{verbatim}
+class bvec
+{
+ public:
+
+   bvec(void);
+   bvec(int bitnum);
+   bvec(int bitnum, int val);
+   bvec(const bvec &v);
+   ~bvec(void);
+
+   void set(int i, const bdd &b);
+   bdd operator[](int i)  const;
+   int bitnum(void) const;
+   int empty(void) const;
+   bvec operator=(const bvec &src);
+}   
+\end{verbatim}
+
+\noindent
+The default constructor makes an empty vector with no elements, the
+integer constructor creates a vector with {\tt bitnum} elements (all
+set to false) and the third constructor creates a vector with {\tt
+  bitnum} elements and assigns the integer value {\tt val} to the
+vector. Reference counting is done automatically. The i'th element in
+the vector can be changed with {\tt set} and read with {\tt
+  operator[]}. The number of bits can be found with {\tt bitnum} and
+the method {\tt empty} returns true if the vector is a NULL vector.
+
+  
+% ==========================================================================
+\chapter{Efficiency Concerns}
+
+Getting the most out of any BDD package is not always easy. It
+requires some knowledge about the optimal order of the BDD variables
+and it also helps if you have some knowledge of the internals of the
+package.
+
+First of all --- a good initial variable order is a must. Using the
+automatic reordering methods may be an easy solution, but without a
+good initial order it may also be a waste of time.
+
+Second --- memory is speed. If you allocate as much memory as possible
+from the very beginning, then BuDDy does not have to waste time trying to
+allocate more whenever it is needed. So if you really want speed then
+{\tt bdd\_init} should be called with as many nodes as possible. This
+does unfortunately have the side effect that variable reordering
+becomes extremely slow since it has to reorder an enormous amount of
+nodes the first time it is triggered.
+
+Third --- the operator caches should be as big as possible. Use the
+function {\tt bdd\_setcacheratio} to make sure the size of these is
+increased whenever more nodes are allocated. {\em Please note that
+  BuDDy uses a fixed number of elements for these caches as default}.
+You must call {\tt bdd\_setcacheratio} to change this. I have found a
+cache ratio of 1:64 fitting for BDDs of more than one million nodes
+(the solitare example). This may be a bit overkill, but it works.
+
+Fourth --- BuDDy allocates by default a maximum of 50000 nodes (1Mb
+RAM) every time it resizes the node table. If your problem needs
+millions of nodes, then this is way too small a number. Use {\tt
+  bdd\_setmaxincrease} to increase this number. In the solitare
+example something like 5000000 nodes seems more reasonable.
+
+Fifth --- by default, BuDDy increases the node table whenever there is
+less than 20\% nodes free. By increasing this value you can make BuDDy
+go faster and use more memory or vice versa. You can change the value
+with {\tt bdd\_setminfreenodes}.
+
+So, to sum it up: if you want speed, then allocate as many nodes as
+possible, use small cache ratios and set {\tt maxincrease}. If you
+need memory, then allocate a small number of nodes from the beginning,
+use a fixed size cache, do not change {\tt maxincrease} and lower {\tt
+  minfreenodes}.
+
+
+% ==========================================================================
+\chapter{Some Implementation details} \index{implementation}
+
+\begin{itemize}
+\item Negated pointers are not used.
+
+\item All nodes are stored in one big contiguous array which is also used
+  as the hash table for finding identical nodes.
+  
+\item The hash function used to find identical nodes from the triple
+  $(level, low, high)$ spreads all nodes evenly in the table. This means
+  the average length of a hash chain is at most 1.
+  
+\item Each node in the node table contains a reference count, the {\tt
+    level} of the variable (this is its position in the current
+  variable order), the {\tt high} and {\tt low} part, a {\tt hash}
+  index used to find the first node in a hash chain and a {\tt next}
+  index used to link the hash chains. Each node fits into 20 bytes of
+  memory. Other packages uses only 16 bytes for each node but in
+  addition to this they must keep separate tables with hash table
+  entries. The effect of this is that the total memory consumption is
+  20 bytes for each node on average.
+
+\item Reference counting are done on the externally referenced nodes only.
+
+\item The ANSI-C {\tt bdd} type is an integer number referring to an
+  index in the node table. In C++ it is a class.
+  
+\item New nodes are created by doubling (or just extending) the node
+  table, not by adding new blocks of nodes.
+
+\item Garbage collection recursively marks all nodes reachable from the
+  externally referenced nodes before dead nodes are removed.
+
+\item Reordering interrupts the current BDD operation and restarts it
+  again afterwards.
+  
+\item Reordering changes the hash function to one where all nodes of a
+  specific level is placed in one continuous block and updates the reference
+  count field to include all recursive dependencies. After reordering
+  the package returns to the normal hash function.
+\end{itemize}
+
+% ==========================================================================
+\chapter{Reference}
+
+\noindent
+\input{specs.tex}
+
+\bibliography{jbln}
+
+\printindex
+
+\end{document}
