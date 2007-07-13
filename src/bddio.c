@@ -34,6 +34,9 @@
   AUTH:  Jorn Lind
   DATE:  (C) june 1997
 *************************************************************************/
+/** \file bddio.c
+ */
+
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -66,32 +69,29 @@ static int      *loadvar2level;
 /*=== PRINTING ========================================================*/
 
 
-/*
-NAME    {* bdd\_file\_hook *}
-SECTION {* kernel *}
-SHORT   {* Specifies a printing callback handler *}
-PROTO   {* bddfilehandler bdd_file_hook(bddfilehandler handler) *}
-DESCR   {* A printing callback handler for use with BDDs is used to
-           convert the BDD variable number into something readable by the
-	   end user. Typically the handler will print a string name
-	   instead of the number. A handler could look like this:
-	   \begin{verbatim}
-void printhandler(FILE *o, int var)
-{
-   extern char **names;
-   fprintf(o, "%s", names[var]);
-}
-\end{verbatim}
-
-           \noindent
-           The handler can then be passed to BuDDy like this:
-	   {\tt bdd\_file\_hook(printhandler)}.
-
-	   No default handler is supplied. The argument {\tt handler} may be
-	   NULL if no handler is needed. *}
-RETURN  {* The old handler *}
-ALSO    {* bdd\_printset, bdd\_strm\_hook, fdd\_file\_hook *}
-*/
+/**
+ * \ingroup kernel
+ * \brief Specifies a printing callback handler.
+ *
+ * A printing callback handler for use with BDDs is used to convert the BDD variable number into
+ * something readable by the end user. Typically the handler will print a string name instead
+ * of the number. A handler could look like this: 
+ * \verbatim
+ * void printhandler(FILE **o, int var) 
+ * { 
+ *   extern char **names; fprintf(o, "%s", names[var]); 
+ * } 
+ * \endverbatim
+ * The handler can then be passed to BuDDy like this:
+ * \verbatim
+ * bdd_file_hook(printhandler);
+ * \endverbatim
+ * No default handler is supplied. The argument \a handler
+ * may be NULL if no handler is needed.
+ * 
+ * \return The old handler.
+ * \see bdd_printset, bdd_strm_hook, fdd_file_hook
+ */
 bddfilehandler bdd_file_hook(bddfilehandler handler)
 {
    bddfilehandler old = filehandler;
@@ -100,22 +100,19 @@ bddfilehandler bdd_file_hook(bddfilehandler handler)
 }
 
 
-/*
-NAME    {* bdd\_printall *}
-EXTRA   {* bdd\_fprintall *}
-SECTION {* fileio *}
-SHORT   {* prints all used entries in the node table *}
-PROTO   {* void bdd_printall(void)
-void bdd_fprintall(FILE* ofile) *}
-DESCR   {* Prints to either stdout or the file {\tt ofile} all the used
-           entries in the main node table. The format is:
-	   \begin{Ill}
-  	     {\tt [Nodenum] Var/level Low High}
-	   \end{Ill}
-	   Where {\tt Nodenum} is the position in the node table and level
-	   is the position in the current variable order. *}
-ALSO    {* bdd\_printtable, bdd\_printset, bdd\_printdot *}
-*/
+/**
+ * \ingroup fileio
+ * \brief Prints all used entries in the node table.
+ *
+ * Prints to either stdout or the file \a ofile all the used entries in the main node table. The
+ * format is: 
+ * \verbatim a [Nodenum] Var/level Low High 
+ * \endverbatim
+ * Where \a Nodenum is the
+ * position in the node table and level is the position in the current variable order.
+ * 
+ * \see bdd_printtable, bdd_printset, bdd_printdot
+ */
 void bdd_printall(void)
 {
    bdd_fprintall(stdout);
@@ -144,22 +141,20 @@ void bdd_fprintall(FILE *ofile)
 }
 
 
-/*
-NAME    {* bdd\_printtable *}
-EXTRA   {* bdd\_fprinttable *}
-SECTION {* fileio *}
-SHORT   {* prints the node table entries used by a BDD *}
-PROTO   {* void bdd_printtable(BDD r)
-void bdd_fprinttable(FILE* ofile, BDD r) *}
-DESCR   {* Prints to either stdout or the file {\tt ofile} all the entries
-           in the main node table used by {\tt r}. The format is:
-	   \begin{Ill}
-  	     {\tt [Nodenum] Var/level :  Low High}
-	   \end{Ill}
-	   Where {\tt Nodenum} is the position in the node table and level
-	   is the position in the current variable order. *}
-ALSO    {* bdd\_printall, bdd\_printset, bdd\_printdot *}
-*/
+/**
+ * \ingroup fileio
+ * \brief Prints the node table entries used by a bdd.
+ *
+ * Prints to either stdout or the file \a ofile all the entries in the main node table used by \a r.
+ * The format is: 
+ * \verbatim 
+ * a [Nodenum] Var/level : Low High 
+ * \endverbatim
+ * Where \a Nodenum is
+ * the position in the node table and level is the position in the current variable order.
+ * 
+ * \see bdd_printall, bdd_printset, bdd_printdot
+ */
 void bdd_printtable(BDD r)
 {
    bdd_fprinttable(stdout, r);
@@ -199,30 +194,26 @@ void bdd_fprinttable(FILE *ofile, BDD r)
 }
 
 
-/*
-NAME    {* bdd\_printset *}
-EXTRA   {* bdd\_fprintset *}
-SECTION {* fileio *}
-SHORT   {* prints the set of truth assignments specified by a BDD *}
-PROTO   {* bdd_printset(BDD r)
-bdd_fprintset(FILE* ofile, BDD r) *}
-DESCR   {* Prints all the truth assignments for {\tt r} that would yield
-           it true. The format is:
-	   \begin{Ill}
-	     {\tt < $x_{1,1}:c_{1,1},\ldots,x_{1,n_1}:c_{1,n_1}$ >\\
-	          < $x_{2,1}:c_{2,1},\ldots,x_{2,n_2}:c_{2,n_2}$ >\\
-		  $\ldots$ \\
-	          < $x_{N,1}:c_{N,1},\ldots,x_{N,n_3}:c_{N,n_3}$ > }
-	   \end{Ill} 
-	   Where the $x$'s are variable numbers (and the position in the
-	   current order) and the $c$'s are the
-	   possible assignments to these. Each set of brackets designates
-	   one possible assignment to the set of variables that make up the
-	   BDD. All variables not shown are don't cares. It is possible to
-	   specify a callback handler for printing of the variables using
-	   {\tt bdd\_file\_hook} or {\tt bdd\_strm\_hook}. *}
-ALSO    {* bdd\_printall, bdd\_printtable, bdd\_printdot, bdd\_file\_hook, bdd\_strm\_hook *}
-*/
+/**
+ * \ingroup fileio
+ * \brief Prints the set of truth assignments specified by a bdd.
+ *
+ * Prints all the truth assignments for \a r that would yield it true. The format is:
+ * \f{eqnarray*}
+ * a < x_{1,1}:c_{1,1},\ldots,x_{1,n_1}:c_{1,n_1} >\\ <
+ * x_{2,1}:c_{2,1},\ldots,x_{2,n_2}:c_{2,n_2} >\\ 
+ * \ldots \\ <
+ * x_{N,1}:c_{N,1},\ldots,x_{N,n_3}:c_{N,n_3} >
+ * \f}
+ * Where the \f$x\f$'s are
+ * variable numbers (and the position in the current order) and the \f$c\f$'s are the possible
+ * assignments to these. Each set of brackets designates one possible assignment to the set of
+ * variables that make up the BDD. All variables not shown are don't cares. It is possible to
+ * specify a callback handler for printing of the variables using ::bdd_file_hook or
+ * ::bdd_strm_hook.
+ * 
+ * \see bdd_printall, bdd_printtable, bdd_printdot, bdd_file_hook, bdd_strm_hook
+ */
 void bdd_printset(BDD r)
 {
    bdd_fprintset(stdout, r);
@@ -294,21 +285,16 @@ static void bdd_printset_rec(FILE *ofile, int r, int *set)
 }
 
 
-/*
-NAME    {* bdd\_printdot *}
-EXTRA   {* bdd\_fprintdot *}
-SECTION {* fileio *}
-SHORT   {* prints a description of a BDD in DOT format *}
-PROTO   {* void bdd_printdot(BDD r)
-int bdd_fnprintdot(char* fname, BDD r)
-void bdd_fprintdot(FILE* ofile, BDD r) *}
-DESCR   {* Prints a BDD in a format suitable for use with the graph
-           drawing program DOT to either stdout, a designated file
-	   {\tt ofile} or the file named by {\tt fname}. In the last case
-	   the file will be opened for writing, any previous contents
-	   destroyed and then closed again. *}
-ALSO    {* bdd\_printall, bdd\_printtable, bdd\_printset *}
-*/
+/**
+ * \ingroup fileio
+ * \brief Prints a description of a bdd in dot format.
+ *
+ * Prints a BDD in a format suitable for use with the graph drawing program DOT to either stdout,
+ * a designated file \a ofile or the file named by \a fname. In the last case the file will be
+ * opened for writing, any previous contents destroyed and then closed again.
+ * 
+ * \see bdd_printall, bdd_printtable, bdd_printset
+ */
 void bdd_printdot(BDD r)
 {
    bdd_fprintdot(stdout, r);
@@ -364,20 +350,16 @@ static void bdd_fprintdot_rec(FILE* ofile, BDD r)
 
 /*=== SAVE =============================================================*/
 
-/*
-NAME    {* bdd\_save *}
-EXTRA   {* bdd\_fnsave *}
-SECTION {* fileio *}
-SHORT   {* saves a BDD to a file *}
-PROTO   {* int bdd_fnsave(char *fname, BDD r)
-int bdd_save(FILE *ofile, BDD r) *}
-DESCR   {* Saves the nodes used by {\tt r} to either a file {\tt ofile}
-           which must be opened for writing or to the file named {\tt fname}.
-	   In the last case the file will be truncated and opened for
-	   writing. *}
-ALSO    {* bdd\_load *}
-RETURN  {* Zero on succes, otherwise an error code from {\tt bdd.h}. *}
-*/
+/**
+ * \ingroup fileio
+ * \brief Saves a bdd to a file.
+ *
+ * Saves the nodes used by \a r to either a file \a ofile which must be opened for writing or to the
+ * file named \a fname. In the last case the file will be truncated and opened for writing.
+ * 
+ * \see bdd_load
+ * \return Zero on succes, otherwise an error code from ::bdd.h.
+ */
 int bdd_fnsave(char *fname, BDD r)
 {
    FILE *ofile;
@@ -444,34 +426,24 @@ static int bdd_save_rec(FILE *ofile, int root)
 
 /*=== LOAD =============================================================*/
 
-/*
-NAME    {* bdd\_load *}
-EXTRA   {* bdd\_fnload *}
-SECTION {* fileio *}
-SHORT   {* loads a BDD from a file *}
-PROTO   {* int bdd_fnload(char *fname, BDD *r)
-int bdd_load(FILE *ifile, BDD *r) *}
-DESCR   {* Loads a BDD from a file into the BDD pointed to by {\tt r}.
-           The file can either be the file {\tt ifile} which must be opened
-	   for reading or the file named {\tt fname} which will be opened
-	   automatically for reading.
-
-	   The input file format consists of integers arranged in the following
-	   manner. First the number of nodes $N$ used by the BDD and then the
-	   number of variables $V$ allocated and the variable ordering
-	   in use at the time the BDD was saved.
-	   If $N$ and $V$ are both zero then the BDD is either the constant
-	   true or false BDD, indicated by a $1$ or a $0$ as the next integer.
-
-	   In any other case the next $N$ sets of $4$ integers will describe
-	   the nodes used by the BDD. Each set consists of first the node
-	   number, then the variable number and then the low and high nodes.
-
-	   The nodes {\it must} be saved in a order such that any low or
-	   high node must be defined before it is mentioned. *}
-ALSO    {* bdd\_save *}
-RETURN  {* Zero on succes, otherwise an error code from {\tt bdd.h}. *}
-*/
+/**
+ * \ingroup fileio
+ * \brief Loads a bdd from a file.
+ *
+ * Loads a BDD from a file into the BDD pointed to by \a r. The file can either be the file \a ifile
+ * which must be opened for reading or the file named \a fname which will be opened
+ * automatically for reading. The input file format consists of integers arranged in the
+ * following manner. First the number of nodes \f$N\f$ used by the BDD and then the number of
+ * variables \f$V\f$ allocated and the variable ordering in use at the time the BDD was saved. If \f$N\f$
+ * and \f$V\f$ are both zero then the BDD is either the constant true or false BDD, indicated by a 1
+ * or a 0 as the next integer. In any other case the next \f$N\f$ sets of 4 integers will describe
+ * the nodes used by the BDD. Each set consists of first the node number, then the variable
+ * number and then the low and high nodes. The nodes \a must be saved in a order such that any
+ * low or high node must be defined before it is mentioned.
+ * 
+ * \see bdd_save
+ * \return Zero on succes, otherwise an error code from ::bdd.h.
+ */
 int bdd_fnload(char *fname, BDD *root)
 {
    FILE *ifile;

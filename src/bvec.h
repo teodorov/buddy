@@ -34,6 +34,8 @@
   AUTH:  Jorn Lind
   DATE:  (C) may 1999
 *************************************************************************/
+/** \file bvec.h
+ */
 
 #ifndef _BVEC_H
 #define _BVEC_H
@@ -41,23 +43,15 @@
 #include "fdd.h"
 
    /* Boolean (BDD) vector */
-/*
-NAME    {* bvec *}
-SECTION {* bvec *}
-SHORT   {* A boolean vector *}
-PROTO   {* typedef struct s_bvec
-{
-   int bitnum;
-   BDD *bitvec;
-} BVEC;
-
-typedef BVEC bvec; *}
-DESCR   {* This data structure is used to store boolean vectors. The field
-           {\tt bitnum} is the number of elements in the vector and the
-	   field {\tt bitvec} contains the actual BDDs in the vector.
-	   The C++ version of {\tt bvec} is documented at the beginning of
-	   this document *}
-*/
+/**
+ * \ingroup bvec
+ * \brief A boolean vector.
+ *
+ * This data structure is used to store boolean vectors. The field \a bitnum is the number of
+ * elements in the vector and the field \a bitvec contains the actual BDDs in the vector. The C++
+ * version of \a bvec is documented at the beginning of this document.
+ * 
+ */
 typedef struct s_bvec
 {
    int bitnum;

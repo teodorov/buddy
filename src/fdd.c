@@ -36,6 +36,10 @@
 
   NOTE: If V1,...,Vn is BDD vars for a FDD, then Vn is the Least Sign. Bit
 *************************************************************************/
+
+/** \file fdd.c
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include "kernel.h"
@@ -95,31 +99,24 @@ void bdd_fdd_done(void)
 }
 
 
-/*
-NAME    {* fdd\_extdomain *}
-SECTION {* fdd *}
-SHORT   {* adds another set of finite domain blocks *}
-PROTO   {* int fdd_extdomain(int *dom, int num) *}
-DESCR   {* Extends the set of finite domain blocks with the {\tt num}
-           domains in
-           {\tt dom}. Each entry in {\tt dom} defines the size of a new
-	   finite domain which later on can be used for finite state machine
-	   traversal and other operations on finte domains. Each domain
-	   allocates $\log_2(|dom[i]|)$ BDD variables to be used later.
-	   The ordering is interleaved for the domains defined in each
-	   call to {\tt bdd\_extdomain}. This means that assuming domain
-	   $D_0$ needs 2 BDD variables $x_1$ and $x_2$, and another domain
-	   $D_1$ needs 4 BDD variables $y_1,y_2,y_3$ and $y_4$, then the
-	   order will be $x_1,y_1,x_2,y_2,y_3,y_4$. The index of the first
-	   domain in {\tt dom} is returned. The index of the other domains
-	   are offset from this index with the same offset as in {\tt dom}.
-
-	   The BDD variables needed to encode the domain are created for the
-	   purpose and do not interfere with the BDD variables already in
-	   use. *}
-RETURN  {* The index of the first domain or a negative error code. *}
-ALSO    {* fdd\_ithvar, fdd\_equals, fdd\_overlapdomain *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Adds another set of finite domain blocks.
+ *
+ * Extends the set of finite domain blocks with the \a num domains in \a dom. Each entry in \a dom
+ * defines the size of a new finite domain which later on can be used for finite state machine
+ * traversal and other operations on finte domains. Each domain allocates
+ * \f$\log_2(|dom[i]|)\f$ BDD variables to be used later. The ordering is interleaved for the
+ * domains defined in each call to ::bdd_extdomain. This means that assuming domain \f$D_0\f$
+ * needs 2 BDD variables \f$x_1\f$ and \f$x_2\f$, and another domain \f$D_1\f$ needs 4 BDD variables
+ * \f$y_1,y_2,y_3\f$ and \f$y_4\f$, then the order will be \f$x_1,y_1,x_2,y_2,y_3,y_4\f$. The index of
+ * the first domain in \a dom is returned. The index of the other domains are offset from this
+ * index with the same offset as in \a dom. The BDD variables needed to encode the domain are
+ * created for the purpose and do not interfere with the BDD variables already in use.
+ * 
+ * \return The index of the first domain or a negative error code.
+ * \see fdd_ithvar, fdd_equals, fdd_overlapdomain
+ */
 int fdd_extdomain(int *dom, int num)
 {
    int offset = fdvarnum;
@@ -187,23 +184,20 @@ int fdd_extdomain(int *dom, int num)
 }
 
 
-/*
-NAME    {* fdd\_overlapdomain *}
-SECTION {* fdd *}
-SHORT   {* combine two FDD blocks into one *}
-PROTO   {* int fdd_overlapdomain(int v1, int v2) *}
-DESCR   {* This function takes two FDD blocks and merges them into a new one,
-           such that the new one is encoded using both sets of BDD variables.
-	   If {\tt v1} is encoded using the BDD variables $a_1, \ldots,
-	   a_n$ and has a domain of $[0,N_1]$, and {\tt v2} is encoded using
-	   $b_1, \ldots, b_n$ and has a domain of $[0,N_2]$, then the result
-	   will be encoded using the BDD variables $a_1, \ldots, a_n, b_1,
-	   \ldots, b_n$ and have the domain $[0,N_1*N_2]$. The use of this
-	   function may result in some strange output from
-	   {\tt fdd\_printset}. *}
-RETURN  {* The index of the finite domain block *}
-ALSO    {* fdd\_extdomain *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Combine two fdd blocks into one.
+ *
+ * This function takes two FDD blocks and merges them into a new one, such that the new one is
+ * encoded using both sets of BDD variables. If \a v1 is encoded using the BDD variables \f$a_1,
+ * \ldots, a_n\f$ and has a domain of \f$[0,N_1]\f$, and \a v2 is encoded using \f$b_1, \ldots, b_n\f$ and
+ * has a domain of \f$[0,N_2]\f$, then the result will be encoded using the BDD variables \f$a_1,
+ * \ldots, a_n, b_1, \ldots, b_n\f$ and have the domain \f$[0,N_1*N_2]\f$. The use of this function
+ * may result in some strange output from \a fdd_printset.
+ * 
+ * \return The index of the finite domain block.
+ * \see fdd_extdomain
+ */
 int fdd_overlapdomain(int v1, int v2)
 {
    Domain *d;
@@ -241,14 +235,14 @@ int fdd_overlapdomain(int v1, int v2)
 }
 
 
-/*
-NAME    {* fdd\_clearall *}
-SECTION {* fdd *}
-SHORT   {* clear all allocated FDD blocks *}
-PROTO   {* void fdd_clearall(void) *}
-DESCR   {* Removes all defined finite domain blocks defined by
-           {\tt fdd\_extdomain()} and {\tt fdd\_overlapdomain()} *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Clear all allocated fdd blocks.
+ *
+ * Removes all defined finite domain blocks defined by \a fdd_extdomain() and \a
+ * fdd_overlapdomain().
+ * 
+ */
 void fdd_clearall(void)
 {
    bdd_fdd_done();
@@ -260,17 +254,15 @@ void fdd_clearall(void)
   FDD helpers
 *************************************************************************/
 
-/*
-NAME    {* fdd\_domainnum *}
-SECTION {* fdd *}
-SHORT   {* number of defined finite domain blocks *}
-PROTO   {* int fdd_domainnum(void) *}
-DESCR   {* Returns the number of finite domain blocks define by calls to
-           {\tt bdd\_extdomain}. *}
-RETURN  {* The number of defined finite domain blocks
-           or a negative error code *}
-ALSO    {* fdd\_domainsize, fdd\_extdomain *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Number of defined finite domain blocks.
+ *
+ * Returns the number of finite domain blocks define by calls to ::bdd_extdomain.
+ * 
+ * \return The number of defined finite domain blocks or a negative error code.
+ * \see fdd_domainsize, fdd_extdomain
+ */
 int fdd_domainnum(void)
 {
    if (!bddrunning)
@@ -280,16 +272,15 @@ int fdd_domainnum(void)
 }
 
 
-/*
-NAME    {* fdd\_domainsize *}
-SECTION {* fdd *}
-SHORT   {* real size of a finite domain block *}
-PROTO   {* int fdd_domainsize(int var) *}
-DESCR   {* Returns the size of the domain for the finite domain
-           block {\tt var}. *}
-RETURN  {* The size or a negative error code *}
-ALSO    {* fdd\_domainnum *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Real size of a finite domain block.
+ *
+ * Returns the size of the domain for the finite domain block \a var.
+ * 
+ * \return The size or a negative error code.
+ * \see fdd_domainnum
+ */
 int fdd_domainsize(int v)
 {
    if (!bddrunning)
@@ -301,16 +292,15 @@ int fdd_domainsize(int v)
 }
 
 
-/*
-NAME    {* fdd\_varnum *}
-SECTION {* fdd *}
-SHORT   {* binary size of a finite domain block *}
-PROTO   {* int fdd_varnum(int var) *}
-DESCR   {* Returns the number of BDD variables used for the finite domain
-           block {\tt var}. *}
-RETURN  {* The number of variables or a negative error code *}
-ALSO    {* fdd\_vars *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Binary size of a finite domain block.
+ *
+ * Returns the number of BDD variables used for the finite domain block \a var.
+ * 
+ * \return The number of variables or a negative error code.
+ * \see fdd_vars
+ */
 int fdd_varnum(int v)
 {
    if (!bddrunning)
@@ -322,20 +312,18 @@ int fdd_varnum(int v)
 }
 
 
-/*
-NAME    {* fdd\_vars *}
-SECTION {* fdd *}
-SHORT   {* all BDD variables associated with a finite domain block *}
-PROTO   {* int *fdd_vars(int var) *}
-DESCR   {* Returns an integer array containing the BDD variables used to
-           define the finite domain block {\tt var}. The size of the array
-	   is the number of variables used to define the finite domain block.
-	   The array will have the Least Significant Bit at pos 0. The
-	   array must {\em not} be deallocated. *}
-RETURN  {* Integer array contaning the variable numbers or NULL if
-           {\tt v} is an unknown block. *}
-ALSO    {* fdd\_varnum *}
-*/
+/**
+ * \ingroup fdd
+ * \brief All bdd variables associated with a finite domain block.
+ *
+ * Returns an integer array containing the BDD variables used to define the finite domain
+ * block \a var. The size of the array is the number of variables used to define the finite domain
+ * block. The array will have the Least Significant Bit at pos 0. The array must {\em not} be
+ * deallocated.
+ * 
+ * \return Integer array contaning the variable numbers or NULL if \a v is an unknown block.
+ * \see fdd_varnum
+ */
 int *fdd_vars(int v)
 {
    if (!bddrunning)
@@ -359,21 +347,18 @@ int *fdd_vars(int v)
   FDD primitives
 *************************************************************************/
 
-/*
-NAME    {* fdd\_ithvar *}
-SECTION {* fdd *}
-SHORT   {* the BDD for the i'th FDD set to a specific value *}
-PROTO   {* BDD fdd_ithvar(int var, int val) *}
-DESCR   {* Returns the BDD that defines the value {\tt val} for the
-           finite domain block {\tt var}. The encoding places the
-	   Least Significant Bit at the top of the BDD tree
-	   (which means they will have the lowest variable index).
-	   The returned BDD will be $V_0 \conj V_1 \conj \ldots
-	   \conj V_N$ where each $V_i$ will be in positive or negative form
-	   depending on the value of {\tt val}. *}
-RETURN  {* The correct BDD or the constant false BDD on error. *}
-ALSO    {* fdd\_ithset *}
-*/
+/**
+ * \ingroup fdd
+ * \brief The bdd for the i'th fdd set to a specific value.
+ *
+ * Returns the BDD that defines the value \a val for the finite domain block \a var. The encoding
+ * places the Least Significant Bit at the top of the BDD tree (which means they will have the
+ * lowest variable index). The returned BDD will be \f$V_0 \land V_1 \land \ldots \land V_N\f$
+ * where each \f$V_i\f$ will be in positive or negative form depending on the value of \a val.
+ * 
+ * \return The correct BDD or the constant false BDD on error.
+ * \see fdd_ithset
+ */
 BDD fdd_ithvar(int var, int val)
 {
    int n;
@@ -415,17 +400,16 @@ BDD fdd_ithvar(int var, int val)
 }
 
 
-/*
-NAME    {* fdd\_scanvar *}
-SECTION {* fdd *}
-SHORT   {* Finds one satisfying value of a FDD variable *}
-PROTO   {* int fdd_scanvar(BDD r, int var) *}
-DESCR   {* Finds one satisfying assignment of the FDD variable {\tt var} in the
-           BDD {\tt r} and returns this value. *}
-RETURN  {* The value of a satisfying assignment of {\tt var}. If {\tt r} is
-           the trivially false BDD, then a negative value is returned. *}
-ALSO    {* fdd\_scanallvar *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Finds one satisfying value of a fdd variable.
+ *
+ * Finds one satisfying assignment of the FDD variable \a var in the BDD \a r and returns this
+ * value.
+ * 
+ * \return The value of a satisfying assignment of \a var. If \a r is the trivially false BDD, then a negative value is returned.
+ * \see fdd_scanallvar
+ */
 int fdd_scanvar(BDD r, int var)
 {
    int *allvar;
@@ -445,20 +429,17 @@ int fdd_scanvar(BDD r, int var)
 }
 
 
-/*
-NAME    {* fdd\_scanallvar *}
-SECTION {* fdd *}
-SHORT   {* Finds one satisfying value of all FDD variables *}
-PROTO   {* int* fdd_scanallvar(BDD r) *}
-DESCR   {* Finds one satisfying assignment in {\tt r} of all the defined
-           FDD variables. Each value is stored in an array which is
-	   returned. The size of this array is exactly the number of
-	   FDD variables defined. It is the user's responsibility to
-	   free this array using {\tt free()}. *}
-RETURN  {* An array with all satisfying values. If {\tt r} is the trivially
-           false BDD, then NULL is returned. *}
-ALSO    {* fdd\_scanvar *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Finds one satisfying value of all fdd variables.
+ *
+ * Finds one satisfying assignment in \a r of all the defined FDD variables. Each value is
+ * stored in an array which is returned. The size of this array is exactly the number of FDD
+ * variables defined. It is the user's responsibility to free this array using \a free().
+ * 
+ * \return An array with all satisfying values. If \a r is the trivially false BDD, then NULL is returned.
+ * \see fdd_scanvar
+ */
 int* fdd_scanallvar(BDD r)
 {
    int n;
@@ -509,16 +490,16 @@ int* fdd_scanallvar(BDD r)
    return res;
 }
    
-/*
-NAME    {* fdd\_ithset *}
-SECTION {* fdd *}
-SHORT   {* the variable set for the i'th finite domain block *}
-PROTO   {* BDD fdd_ithset(int var) *}
-DESCR   {* Returns the variable set that contains the variables used to
-           define the finite domain block {\tt var}. *}
-RETURN  {* The variable set or the constant false BDD on error. *}
-ALSO    {* fdd\_ithvar *}
-*/
+/**
+ * \ingroup fdd
+ * \brief The variable set for the i'th finite domain block.
+ *
+ * Returns the variable set that contains the variables used to define the finite domain block
+ * \a var.
+ * 
+ * \return The variable set or the constant false BDD on error.
+ * \see fdd_ithvar
+ */
 BDD fdd_ithset(int var)
 {
    if (!bddrunning)
@@ -536,18 +517,16 @@ BDD fdd_ithset(int var)
    return domain[var].var;
 }
 
-/*
-NAME    {* fdd\_domain *}
-SECTION {* fdd *}
-SHORT   {* BDD encoding of the domain of a FDD variable *}
-PROTO   {* BDD fdd_domain(int var) *}
-DESCR   {* Returns what corresponds to a disjunction of all possible
-           values of the variable  {\tt var}.
-	   This is more efficient than doing
-	   {\tt fdd\_ithvar(var,0) OR fdd\_ithvar(var,1) ...} explicitely
-	   for all values in the domain of {\tt var}. *}
-RETURN  {* The encoding of the domain*}
-*/
+/**
+ * \ingroup fdd
+ * \brief Bdd encoding of the domain of a fdd variable.
+ *
+ * Returns what corresponds to a disjunction of all possible values of the variable \a var.
+ * This is more efficient than doing \a fdd_ithvar(var,0) OR fdd_ithvar(var,1) ...
+ * explicitely for all values in the domain of \a var.
+ * 
+ * \return The encoding of the domain.
+ */
 BDD fdd_domain(int var)
 {
    int n,val;
@@ -592,17 +571,15 @@ BDD fdd_domain(int var)
 }
 
 
-/*
-NAME    {* fdd\_equals *}
-SECTION {* fdd *}
-SHORT   {* returns a BDD setting two FD. blocks equal *}
-PROTO   {* BDD fdd_equals(int f, int g) *}
-DESCR   {* Builds a BDD which is true for all the possible assignments to
-           the variable blocks {\tt f} and {\tt g} that makes the blocks
-	   equal. This is more or less just a shorthand for calling
-	   {\tt fdd\_equ()}. *}
-RETURN  {* The correct BDD or the constant false on errors. *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Returns a bdd setting two fd. blocks equal.
+ *
+ * Builds a BDD which is true for all the possible assignments to the variable blocks \a f and \a g
+ * that makes the blocks equal. This is more or less just a shorthand for calling \a fdd_equ().
+ * 
+ * \return The correct BDD or the constant false on errors.
+ */
 BDD fdd_equals(int left, int right)
 {
    BDD e = bddtrue, tmp1, tmp2;
@@ -646,32 +623,27 @@ BDD fdd_equals(int left, int right)
   File IO
 *************************************************************************/
 
-/*
-NAME    {* fdd\_file\_hook *}
-SECTION {* fdd *}
-SHORT   {* Specifies a printing callback handler *}
-PROTO   {* bddfilehandler fdd_file_hook(bddfilehandler handler) *}
-DESCR   {* A printing callback handler for use with FDDs is used to
-           convert the FDD integer identifier into something readable by the
-	   end user. Typically the handler will print a string name
-	   instead of the identifier. A handler could look like this:
-	   \begin{verbatim}
-void printhandler(FILE *o, int var)
-{
-   extern char **names;
-   fprintf(o, "%s", names[var]);
-}
-\end{verbatim}
-
-           \noindent
-           The handler can then be passed to BuDDy like this:
-	   {\tt fdd\_file\_hook(printhandler)}.
-
-	   No default handler is supplied. The argument {\tt handler} may be
-	   NULL if no handler is needed. *}
-RETURN  {* The old handler *}
-ALSO    {* fdd\_printset, bdd\_file\_hook *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Specifies a printing callback handler.
+ *
+ * A printing callback handler for use with FDDs is used to convert the FDD integer identifier
+ * into something readable by the end user. Typically the handler will print a string name
+ * instead of the identifier. A handler could look like this: 
+ * \verbatim
+ * void * printhandler(FILE *o, int var) 
+ * { 
+ *   extern char **names; 
+ *   fprintf(o, "%s", names[var]); 
+ * }
+ * \endverbatim
+ * The handler can then be passed to BuDDy like this: \a
+ * fdd_file_hook(printhandler). No default handler is supplied. The argument \a handler
+ * may be NULL if no handler is needed.
+ * 
+ * \return The old handler.
+ * \see fdd_printset, bdd_file_hook
+ */
 bddfilehandler fdd_file_hook(bddfilehandler h)
 {
    bddfilehandler old = filehandler;
@@ -679,21 +651,17 @@ bddfilehandler fdd_file_hook(bddfilehandler h)
    return old;
 }
 
-/*
-NAME    {* fdd\_printset *}
-EXTRA   {* fdd\_fprintset *}
-SECTION {* fdd *}
-SHORT   {* prints a BDD for a finite domain block *}
-PROTO   {* void fdd_printset(BDD r)
-void fdd_fprintset(FILE *ofile, BDD f) *}
-DESCR   {* Prints the BDD {\tt f} using a set notation as in
-           {\tt bdd\_printset} but with the index of the finite domain blocks
-	   included instead of the BDD variables. It is possible to specify
-	   a printing callback function with {\tt fdd\_file\_hook} or
-	   {\tt fdd\_strm\_hook} which can be used to print the FDD
-	   identifier in a readable form. *}
-ALSO    {* bdd\_printset, fdd\_file\_hook, fdd\_strm\_hook *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Prints a bdd for a finite domain block.
+ *
+ * Prints the BDD \a f using a set notation as in ::bdd_printset but with the index of the finite
+ * domain blocks included instead of the BDD variables. It is possible to specify a printing
+ * callback function with \a fdd_file_hook or \a fdd_strm_hook which can be used to print the
+ * FDD identifier in a readable form.
+ * 
+ * \see bdd_printset, fdd_file_hook, fdd_strm_hook
+ */
 void fdd_printset(BDD r)
 {
    CHECKn(r);
@@ -812,19 +780,17 @@ static void fdd_printset_rec(FILE *ofile, int r, int *set)
 
 /*======================================================================*/
 
-/*
-NAME    {* fdd\_scanset *}
-SECTION {* fdd *}
-SHORT   {* scans a variable set *}
-PROTO   {* int fdd_scanset(BDD r, int **varset, int *varnum) *}
-DESCR   {* Scans the BDD {\tt r} to find all occurences of FDD variables
-           and then stores these in {\tt varset}. {\tt varset} will be set
-	   to point to an array of size {\tt varnum} which will contain
-	   the indices of the found FDD variables. It is the users
-	   responsibility to free {\tt varset} after use. *}
-RETURN  {* Zero on success or a negative error code on error. *}
-ALSO    {* fdd\_makeset *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Scans a variable set.
+ *
+ * Scans the BDD \a r to find all occurences of FDD variables and then stores these in \a varset.
+ * \a varset will be set to point to an array of size \a varnum which will contain the indices of
+ * the found FDD variables. It is the users responsibility to free \a varset after use.
+ * 
+ * \return Zero on success or a negative error code on error.
+ * \see fdd_makeset
+ */
 int fdd_scanset(BDD r, int **varset, int *varnum)
 {
    int *fv, fn;
@@ -877,17 +843,16 @@ int fdd_scanset(BDD r, int **varset, int *varnum)
 
 /*======================================================================*/
 
-/*
-NAME    {* fdd\_makeset *}
-SECTION {* fdd *}
-SHORT   {* creates a variable set for N finite domain blocks *}
-PROTO   {* BDD fdd_makeset(int *varset, int varnum) *}
-DESCR   {* Returns a BDD defining all the variable sets used to define
-           the variable blocks in the array {\tt varset}. The argument
-	   {\tt varnum} defines the size of {\tt varset}. *}
-RETURN  {* The correct BDD or the constant false on errors. *}
-ALSO    {* fdd\_ithset, bdd\_makeset *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Creates a variable set for n finite domain blocks.
+ *
+ * Returns a BDD defining all the variable sets used to define the variable blocks in the array
+ * \a varset. The argument \a varnum defines the size of \a varset.
+ * 
+ * \return The correct BDD or the constant false on errors.
+ * \see fdd_ithset, bdd_makeset
+ */
 BDD fdd_makeset(int *varset, int varnum)
 {
    BDD res=bddtrue, tmp;
@@ -918,17 +883,16 @@ BDD fdd_makeset(int *varset, int varnum)
 }
 
 
-/*
-NAME    {* fdd\_intaddvarblock *}
-SECTION {* fdd *}
-SHORT   {* adds a new variable block for reordering *}
-PROTO   {* int fdd_intaddvarblock(int first, int last, int fixed) *}
-DESCR   {* Works exactly like {\tt bdd\_addvarblock} except that
-           {\tt fdd\_intaddvarblock} takes a range of FDD variables
-	   instead of BDD variables. *}
-RETURN  {* Zero on success, otherwise a negative error code. *}
-ALSO    {* bdd\_addvarblock, bdd\_intaddvarblock, bdd\_reorder *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Adds a new variable block for reordering.
+ *
+ * Works exactly like ::bdd_addvarblock except that \a fdd_intaddvarblock takes a range of
+ * FDD variables instead of BDD variables.
+ * 
+ * \return Zero on success, otherwise a negative error code.
+ * \see bdd_addvarblock, bdd_intaddvarblock, bdd_reorder
+ */
 int fdd_intaddvarblock(int first, int last, int fixed)
 {
    bdd res = bddtrue, tmp;
@@ -955,18 +919,17 @@ int fdd_intaddvarblock(int first, int last, int fixed)
 }
 
 
-/*
-NAME    {* fdd\_setpair *}
-SECTION {* fdd *}
-SHORT   {* defines a pair for two finite domain blocks *}
-PROTO   {* int fdd_setpair(bddPair *pair, int p1, int p2) *}
-DESCR   {* Defines each variable in the finite domain block {\tt p1} to
-           be paired with the corresponding variable in {\tt p2}. The result
-	   is stored in {\tt pair} which must be allocated using
-	   {\tt bdd\_makepair}. *}
-RETURN  {* Zero on success or a negative error code on error. *}
-ALSO    {* fdd\_setpairs *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Defines a pair for two finite domain blocks.
+ *
+ * Defines each variable in the finite domain block \a p1 to be paired with the corresponding
+ * variable in \a p2. The result is stored in \a pair which must be allocated using
+ * ::bdd_makepair.
+ * 
+ * \return Zero on success or a negative error code on error.
+ * \see fdd_setpairs
+ */
 int fdd_setpair(bddPair *pair, int p1, int p2)
 {
    int n,e;
@@ -988,19 +951,17 @@ int fdd_setpair(bddPair *pair, int p1, int p2)
 }
 
 
-/*
-NAME    {* fdd\_setpairs *}
-SECTION {* fdd *}
-SHORT   {* defines N pairs for finite domain blocks *}
-PROTO   {* int fdd_setpairs(bddPair *pair, int *p1, int *p2, int size) *}
-DESCR   {* Defines each variable in all the finite domain blocks listed in
-           the array {\tt p1} to be paired with the corresponding variable
-	   in {\tt p2}. The result
-	   is stored in {\tt pair} which must be allocated using
-	   {\tt bdd\_makeset}.*}
-RETURN  {* Zero on success or a negative error code on error. *}
-ALSO    {* bdd\_setpair *}
-*/
+/**
+ * \ingroup fdd
+ * \brief Defines n pairs for finite domain blocks.
+ *
+ * Defines each variable in all the finite domain blocks listed in the array \a p1 to be paired
+ * with the corresponding variable in \a p2. The result is stored in \a pair which must be
+ * allocated using ::bdd_makeset.
+ * 
+ * \return Zero on success or a negative error code on error.
+ * \see bdd_setpair
+ */
 int fdd_setpairs(bddPair *pair, int *p1, int *p2, int size)
 {
    int n,e;

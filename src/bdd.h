@@ -34,6 +34,8 @@
   AUTH:  Jorn Lind
   DATE:  (C) feb 1997
 *************************************************************************/
+/** \file bdd.h
+ */
 
 #ifndef _BDD_H
 #define _BDD_H
@@ -83,34 +85,23 @@ typedef struct s_bddPair
 
 /*=== Status information ===============================================*/
 
-/*
-NAME    {* bddStat *}
-SECTION {* kernel *}
-SHORT   {* Status information about the bdd package *}
-PROTO   {* typedef struct s_bddStat
-{
-   long int produced;
-   int nodenum;
-   int maxnodenum;
-   int freenodes;
-   int minfreenodes;
-   int varnum;
-   int cachesize;
-   int gbcnum;
-} bddStat;  *}
-DESCR   {* The fields are \\[\baselineskip] \begin{tabular}{lp{10cm}}
-  {\tt produced}     & total number of new nodes ever produced \\
-  {\tt nodenum}      & currently allocated number of bdd nodes \\
-  {\tt maxnodenum}   & user defined maximum number of bdd nodes \\
-  {\tt freenodes}    & number of currently free nodes \\
-  {\tt minfreenodes} & minimum number of nodes that should be left after a
-                       garbage collection. \\
-  {\tt varnum}       & number of defined bdd variables \\
-  {\tt cachesize}    & number of entries in the internal caches \\
-  {\tt gbcnum}       & number of garbage collections done until now
-  \end{tabular} *}
-ALSO    {* bdd\_stats *}
-*/
+/**
+ * \ingroup kernel
+ * \brief Status information about the bdd package.
+ *
+ * The fields are 
+ * \param produced Total number of new nodes ever produced. 
+ * \param nodenum Currently allocated number of bdd nodes.
+ * \param maxnodenum User defined maximum number of bdd nodes.
+ * \param freenodes Number of currently free nodes.
+ * \param minfreenodes Minimum number of nodes that should be left after a garbage
+ * collection. 
+ * \param varnum Number of defined bdd variables.
+ * \param cachesize Number of entries in the internal caches.
+ * \param gbcnum Number of garbage collections done until now.
+ * 
+ * \see bdd_stats
+ */
 typedef struct s_bddStat
 {
    long int produced;
@@ -124,27 +115,19 @@ typedef struct s_bddStat
 } bddStat;
 
 
-/*
-NAME    {* bddGbcStat *}
-SECTION {* kernel *}
-SHORT   {* Status information about garbage collections *}
-PROTO   {* typedef struct s_bddGbcStat
-{
-   int nodes;
-   int freenodes;
-   long time;
-   long sumtime;
-   int num;
-} bddGbcStat;  *}
-DESCR   {* The fields are \\[\baselineskip] \begin{tabular}{ll}
-  {\tt nodes}     & Total number of allocated nodes in the nodetable \\
-  {\tt freenodes} & Number of free nodes in the nodetable \\
-  {\tt time}      & Time used for garbage collection this time \\
-  {\tt sumtime}   & Total time used for garbage collection \\
-  {\tt num}       & number of garbage collections done until now
-  \end{tabular} *}
-ALSO    {* bdd\_gbc\_hook *}
-*/
+/**
+ * \ingroup kernel
+ * \brief Status information about garbage collections.
+ *
+ * The fields are 
+ * \param nodes Total number of allocated nodes in the nodetable.
+ * \param freenodes Number of free nodes in the nodetable.
+ * \param time Time used for garbage collection this time.
+ * \param sumtime Total time used for garbage collection.
+ * \param num Number of garbage collections done until now.
+ * 
+ * \see bdd_gbc_hook
+ */
 typedef struct s_bddGbcStat
 {
    int nodes;
@@ -155,32 +138,21 @@ typedef struct s_bddGbcStat
 } bddGbcStat;
 
 
-/*
-NAME    {* bddCacheStat *}
-SECTION {* kernel *}
-SHORT   {* Status information about cache usage *}
-PROTO   {* typedef struct s_bddCacheStat
-{
-   long unsigned int uniqueAccess;
-   long unsigned int uniqueChain;
-   long unsigned int uniqueHit;
-   long unsigned int uniqueMiss;
-   long unsigned int opHit;
-   long unsigned int opMiss;
-   long unsigned int swapCount;
-} bddCacheStat; *}
-DESCR   {* The fields are \\[\baselineskip] \begin{tabular}{ll}
-  {\bf Name}         & {\bf Number of } \\
-  uniqueAccess & accesses to the unique node table \\
-  uniqueChain  & iterations through the cache chains in the unique node table\\
-  uniqueHit    & entries actually found in the the unique node table \\
-  uniqueMiss   & entries not found in the the unique node table \\
-  opHit        & entries found in the operator caches \\
-  opMiss       & entries not found in the operator caches \\
-  swapCount    & number of variable swaps in reordering \\
-\end{tabular} *}
-ALSO    {* bdd\_cachestats *}
-*/
+/**
+ * \ingroup kernel
+ * \brief Status information about cache usage.
+ *
+ * The fields are 
+ * \param uniqueAccess Number of accesses to the unique node table.
+ * \param uniqueChain Number of iterations through the cache chains in the unique node table.
+ * \param uniqueHit Number of entries actually found in the the unique node table.
+ * \param uniqueMiss Number of entries not found in the the unique node table.
+ * \param opHit Number of entries found in the operator caches.
+ * \param opMiss Number of entries not found in the operator caches.
+ * \param swapCount Number of variable swaps in reordering.
+ * 
+ * \see bdd_cachestats
+ */
 typedef struct s_bddCacheStat
 {
    long unsigned int uniqueAccess;
@@ -194,17 +166,16 @@ typedef struct s_bddCacheStat
 
 /*=== BDD interface prototypes =========================================*/
 
-/*
-NAME    {* bdd\_relprod *}
-SECTION {* operator *}
-SHORT   {* relational product *}
-PROTO   {* #define bdd_relprod(a,b,var) bdd_appex(a,b,bddop_and,var) *}
-DESCR   {* Calculates the relational product of {\tt a} and {\tt b} as
-           {\tt a AND b} with the variables in {\tt var} quantified out
-	   afterwards. *}
-RETURN  {* The relational product or {\tt bddfalse} on errors. *}
-ALSO    {* bdd\_appex *}
-*/
+/**
+ * \ingroup operator
+ * \brief Relational product.
+ *
+ * Calculates the relational product of \a a and \a b as \a a AND b with the variables in \a var
+ * quantified out afterwards.
+ * 
+ * \return The relational product or ::bddfalse on errors.
+ * \see bdd_appex
+ */
 #define bdd_relprod(a,b,var) bdd_appex((a),(b),bddop_and,(var))
 
 

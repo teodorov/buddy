@@ -4,3 +4,4 @@ Makefile
 .libs
 fdd
 result
+fdd_out.txt
