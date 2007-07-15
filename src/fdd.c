@@ -107,7 +107,7 @@ void bdd_fdd_done(void)
  * defines the size of a new finite domain which later on can be used for finite state machine
  * traversal and other operations on finte domains. Each domain allocates
  * \f$\log_2(|dom[i]|)\f$ BDD variables to be used later. The ordering is interleaved for the
- * domains defined in each call to ::bdd_extdomain. This means that assuming domain \f$D_0\f$
+ * domains defined in each call to ::fdd_extdomain. This means that assuming domain \f$D_0\f$
  * needs 2 BDD variables \f$x_1\f$ and \f$x_2\f$, and another domain \f$D_1\f$ needs 4 BDD variables
  * \f$y_1,y_2,y_3\f$ and \f$y_4\f$, then the order will be \f$x_1,y_1,x_2,y_2,y_3,y_4\f$. The index of
  * the first domain in \a dom is returned. The index of the other domains are offset from this
@@ -189,11 +189,12 @@ int fdd_extdomain(int *dom, int num)
  * \brief Combine two fdd blocks into one.
  *
  * This function takes two FDD blocks and merges them into a new one, such that the new one is
- * encoded using both sets of BDD variables. If \a v1 is encoded using the BDD variables \f$a_1,
- * \ldots, a_n\f$ and has a domain of \f$[0,N_1]\f$, and \a v2 is encoded using \f$b_1, \ldots, b_n\f$ and
- * has a domain of \f$[0,N_2]\f$, then the result will be encoded using the BDD variables \f$a_1,
- * \ldots, a_n, b_1, \ldots, b_n\f$ and have the domain \f$[0,N_1*N_2]\f$. The use of this function
- * may result in some strange output from \a fdd_printset.
+ * encoded using both sets of BDD variables. If \a v1 is encoded using the BDD variables \f$a_1,  \ldots, a_n\f$ 
+ * and has a domain of \f$[0,N_1]\f$, and \a v2 is encoded using \f$b_1, \ldots, b_n\f$ and
+ * has a domain of \f$[0,N_2]\f$, then the result will be encoded using the BDD variables 
+ * \f$a_1,  \ldots, a_n, b_1, \ldots, b_n\f$
+ * and have the domain \f$[0,N_1*N_2]\f$. The use of this function
+ * may result in strange output from ::fdd_printset.
  * 
  * \return The index of the finite domain block.
  * \see fdd_extdomain
@@ -239,8 +240,8 @@ int fdd_overlapdomain(int v1, int v2)
  * \ingroup fdd
  * \brief Clear all allocated fdd blocks.
  *
- * Removes all defined finite domain blocks defined by \a fdd_extdomain() and \a
- * fdd_overlapdomain().
+ * Removes all defined finite domain blocks defined by ::fdd_extdomain() and 
+ * ::fdd_overlapdomain().
  * 
  */
 void fdd_clearall(void)
@@ -258,7 +259,7 @@ void fdd_clearall(void)
  * \ingroup fdd
  * \brief Number of defined finite domain blocks.
  *
- * Returns the number of finite domain blocks define by calls to ::bdd_extdomain.
+ * Returns the number of finite domain blocks define by calls to ::fdd_extdomain.
  * 
  * \return The number of defined finite domain blocks or a negative error code.
  * \see fdd_domainsize, fdd_extdomain
@@ -318,7 +319,7 @@ int fdd_varnum(int v)
  *
  * Returns an integer array containing the BDD variables used to define the finite domain
  * block \a var. The size of the array is the number of variables used to define the finite domain
- * block. The array will have the Least Significant Bit at pos 0. The array must {\em not} be
+ * block. The array will have the Least Significant Bit at pos 0. The array must \em not be
  * deallocated.
  * 
  * \return Integer array contaning the variable numbers or NULL if \a v is an unknown block.
@@ -407,7 +408,8 @@ BDD fdd_ithvar(int var, int val)
  * Finds one satisfying assignment of the FDD variable \a var in the BDD \a r and returns this
  * value.
  * 
- * \return The value of a satisfying assignment of \a var. If \a r is the trivially false BDD, then a negative value is returned.
+ * \return The value of a satisfying assignment of \a var. If \a r is the trivially false BDD, 
+ * then a negative value is returned.
  * \see fdd_scanallvar
  */
 int fdd_scanvar(BDD r, int var)
@@ -435,9 +437,9 @@ int fdd_scanvar(BDD r, int var)
  *
  * Finds one satisfying assignment in \a r of all the defined FDD variables. Each value is
  * stored in an array which is returned. The size of this array is exactly the number of FDD
- * variables defined. It is the user's responsibility to free this array using \a free().
+ * variables defined. It is the user's responsibility to free this array using \c free().
  * 
- * \return An array with all satisfying values. If \a r is the trivially false BDD, then NULL is returned.
+ * \return An array with all satisfying values. If \a r is the trivially false BDD, then \c NULL is returned.
  * \see fdd_scanvar
  */
 int* fdd_scanallvar(BDD r)
@@ -522,8 +524,8 @@ BDD fdd_ithset(int var)
  * \brief Bdd encoding of the domain of a fdd variable.
  *
  * Returns what corresponds to a disjunction of all possible values of the variable \a var.
- * This is more efficient than doing \a fdd_ithvar(var,0) OR fdd_ithvar(var,1) ...
- * explicitely for all values in the domain of \a var.
+ * This is more efficient than doing <tt> fdd_ithvar(var,0) OR fdd_ithvar(var,1) ... </tt>
+ * explicitly for all values in the domain of \a var.
  * 
  * \return The encoding of the domain.
  */
@@ -576,7 +578,7 @@ BDD fdd_domain(int var)
  * \brief Returns a bdd setting two fd. blocks equal.
  *
  * Builds a BDD which is true for all the possible assignments to the variable blocks \a f and \a g
- * that makes the blocks equal. This is more or less just a shorthand for calling \a fdd_equ().
+ * that makes the blocks equal. This is more or less just a shorthand for calling ::fdd_equals().
  * 
  * \return The correct BDD or the constant false on errors.
  */
@@ -630,16 +632,19 @@ BDD fdd_equals(int left, int right)
  * A printing callback handler for use with FDDs is used to convert the FDD integer identifier
  * into something readable by the end user. Typically the handler will print a string name
  * instead of the identifier. A handler could look like this: 
- * \verbatim
+ * \code
  * void * printhandler(FILE *o, int var) 
  * { 
  *   extern char **names; 
  *   fprintf(o, "%s", names[var]); 
  * }
- * \endverbatim
- * The handler can then be passed to BuDDy like this: \a
- * fdd_file_hook(printhandler). No default handler is supplied. The argument \a handler
- * may be NULL if no handler is needed.
+ * \endcode
+ * The handler can then be passed to BuDDy like this: 
+ * \code
+ * fdd_file_hook(printhandler)
+ * \endcode
+ * No default handler is supplied. The argument \a handler
+ * may be \c NULL if no handler is needed.
  * 
  * \return The old handler.
  * \see fdd_printset, bdd_file_hook
@@ -653,11 +658,11 @@ bddfilehandler fdd_file_hook(bddfilehandler h)
 
 /**
  * \ingroup fdd
- * \brief Prints a bdd for a finite domain block.
+ * \brief Prints a bdd for a finite domain block to \c stdout.
  *
- * Prints the BDD \a f using a set notation as in ::bdd_printset but with the index of the finite
+ * Prints the BDD \a r using a set notation as in ::bdd_printset but with the index of the finite
  * domain blocks included instead of the BDD variables. It is possible to specify a printing
- * callback function with \a fdd_file_hook or \a fdd_strm_hook which can be used to print the
+ * callback function with ::fdd_file_hook or ::fdd_strm_hook which can be used to print the
  * FDD identifier in a readable form.
  * 
  * \see bdd_printset, fdd_file_hook, fdd_strm_hook
@@ -669,6 +674,17 @@ void fdd_printset(BDD r)
 }
 
 
+/**
+ * \ingroup fdd
+ * \brief Prints a bdd for a finite domain block to a file.
+ *
+ * Prints the BDD \a r to \a ofile using a set notation as in ::bdd_printset but with the index of the finite
+ * domain blocks included instead of the BDD variables. It is possible to specify a printing
+ * callback function with ::fdd_file_hook or ::fdd_strm_hook which can be used to print the
+ * FDD identifier in a readable form.
+ * 
+ * \see bdd_printset, fdd_file_hook, fdd_strm_hook
+ */
 void fdd_fprintset(FILE *ofile, BDD r)
 {
    int *set;
@@ -887,7 +903,7 @@ BDD fdd_makeset(int *varset, int varnum)
  * \ingroup fdd
  * \brief Adds a new variable block for reordering.
  *
- * Works exactly like ::bdd_addvarblock except that \a fdd_intaddvarblock takes a range of
+ * Works exactly like ::bdd_addvarblock except that ::fdd_intaddvarblock takes a range of
  * FDD variables instead of BDD variables.
  * 
  * \return Zero on success, otherwise a negative error code.

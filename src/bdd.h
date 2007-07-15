@@ -89,7 +89,6 @@ typedef struct s_bddPair
  * \ingroup kernel
  * \brief Status information about the bdd package.
  *
- * The fields are 
  * \param produced Total number of new nodes ever produced. 
  * \param nodenum Currently allocated number of bdd nodes.
  * \param maxnodenum User defined maximum number of bdd nodes.
@@ -355,30 +354,30 @@ extern const BDD bddtrue;
 
 /*=== Error codes ======================================================*/
 
-#define BDD_MEMORY (-1)   /* Out of memory */
-#define BDD_VAR (-2)      /* Unknown variable */
-#define BDD_RANGE (-3)    /* Variable value out of range (not in domain) */
-#define BDD_DEREF (-4)    /* Removing external reference to unknown node */
-#define BDD_RUNNING (-5)  /* Called bdd_init() twice whithout bdd_done() */
-#define BDD_FILE (-6)     /* Some file operation failed */
-#define BDD_FORMAT (-7)   /* Incorrect file format */
-#define BDD_ORDER (-8)    /* Vars. not in order for vector based functions */
-#define BDD_BREAK (-9)    /* User called break */
-#define BDD_VARNUM (-10)  /* Different number of vars. for vector pair */
-#define BDD_NODES (-11)   /* Tried to set max. number of nodes to be fewer */
-                          /* than there already has been allocated */
-#define BDD_OP (-12)      /* Unknown operator */
-#define BDD_VARSET (-13)  /* Illegal variable set */
-#define BDD_VARBLK (-14)  /* Bad variable block operation */
-#define BDD_DECVNUM (-15) /* Trying to decrease the number of variables */
-#define BDD_REPLACE (-16) /* Replacing to already existing variables */
-#define BDD_NODENUM (-17) /* Number of nodes reached user defined maximum */
-#define BDD_ILLBDD (-18)  /* Illegal bdd argument */
-#define BDD_SIZE (-19)    /* Illegal size argument */
+#define BDD_MEMORY (-1)   /**< Out of memory */
+#define BDD_VAR (-2)      /**< Unknown variable */
+#define BDD_RANGE (-3)    /**< Variable value out of range (not in domain) */
+#define BDD_DEREF (-4)    /**< Removing external reference to unknown node */
+#define BDD_RUNNING (-5)  /**< Called bdd_init() twice whithout bdd_done() */
+#define BDD_FILE (-6)     /**< Some file operation failed */
+#define BDD_FORMAT (-7)   /**< Incorrect file format */
+#define BDD_ORDER (-8)    /**< Vars. not in order for vector based functions */
+#define BDD_BREAK (-9)    /**< User called break */
+#define BDD_VARNUM (-10)  /**< Different number of vars. for vector pair */
+#define BDD_NODES (-11)   /**< Tried to set max. number of nodes to be fewer */
+                          /**< than there already has been allocated */
+#define BDD_OP (-12)      /**< Unknown operator */
+#define BDD_VARSET (-13)  /**< Illegal variable set */
+#define BDD_VARBLK (-14)  /**< Bad variable block operation */
+#define BDD_DECVNUM (-15) /**< Trying to decrease the number of variables */
+#define BDD_REPLACE (-16) /**< Replacing to already existing variables */
+#define BDD_NODENUM (-17) /**< Number of nodes reached user defined maximum */
+#define BDD_ILLBDD (-18)  /**< Illegal bdd argument */
+#define BDD_SIZE (-19)    /**< Illegal size argument */
 
-#define BVEC_SIZE (-20)    /* Mismatch in bitvector size */
-#define BVEC_SHIFT (-21)   /* Illegal shift-left/right parameter */
-#define BVEC_DIVZERO (-22) /* Division by zero */
+#define BVEC_SIZE (-20)    /**< Mismatch in bitvector size */
+#define BVEC_SHIFT (-21)   /**< Illegal shift-left/right parameter */
+#define BVEC_DIVZERO (-22) /**< Division by zero */
 
 #define BDD_ERRNUM 24
 

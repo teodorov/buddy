@@ -82,7 +82,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ../src/bdd.h ../src/bddio.c ../src/bddop.c ../src/bvec.c ../src/bvec.h ../src/fdd.c ../src/kernel.c ../src/pairs.c mainpage.c
+INPUT                  = ../src/bdd.h ../src/bddio.c ../src/bddop.c ../src/bvec.c ../src/bvec.h ../src/fdd.c ../src/kernel.c ../src/pairs.c ../src/reorder.c mainpage.h
 FILE_PATTERNS          = *.c \
                          *.cc \
                          *.cxx \
@@ -131,7 +131,7 @@ EXCLUDE_PATTERNS       =
 EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
-IMAGE_PATH             = 
+IMAGE_PATH             = .
 INPUT_FILTER           = 
 FILTER_PATTERNS        = 
 FILTER_SOURCE_FILES    = NO
@@ -141,8 +141,8 @@ FILTER_SOURCE_FILES    = NO
 SOURCE_BROWSER         = YES
 INLINE_SOURCES         = NO
 STRIP_CODE_COMMENTS    = YES
-REFERENCED_BY_RELATION = YES
-REFERENCES_RELATION    = YES
+REFERENCED_BY_RELATION = NO
+REFERENCES_RELATION    = NO
 REFERENCES_LINK_SOURCE = YES
 USE_HTAGS              = NO
 VERBATIM_HEADERS       = YES

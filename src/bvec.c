@@ -150,7 +150,7 @@ bvec bvec_false(int bitnum)
  * \brief Build a boolean vector representing an integer value.
  *
  * Builds a boolean vector that represents the value \a val using \a bitnum bits. The value will
- * be represented with the LSB at the position 0 and the MSB at position \a bitnum-1.
+ * be represented with the LSB at the position 0 and the MSB at position \a bitnum - 1.
  * 
  * \return The boolean vector (which is already reference counted).
  * \see bvec_true, bvec_false, bvec_var
@@ -179,8 +179,8 @@ bvec bvec_con(int bitnum, int val)
  * \brief Build a boolean vector with bdd variables.
  *
  * Builds a boolean vector with the BDD variables \f$v_1, \ldots, v_n\f$ as the elements. Each
- * variable will be the the variabled numbered \a offset + N*step where \a N ranges from 0 to \a
- * bitnum-1.
+ * variable will be the the variable numbered \a offset + \a N * \a step where \a N ranges from 0 to \a
+ * bitnum - 1.
  * 
  * \return The boolean vector (which is already reference counted).
  * \see bvec_true, bvec_false, bvec_con
@@ -283,7 +283,7 @@ bvec bvec_coerce(int bitnum, bvec v)
  * \brief Test a vector for constant true/false bdds.
  *
  * Returns non-zero if the vector \a v consists of only constant true or false BDDs. Otherwise
- * zero is returned. This test should prelude any call to \a bvec_val.
+ * zero is returned. This test should precede any call to ::bvec_val.
  * 
  * \see bvec_val, bvec_con
  */
@@ -332,7 +332,7 @@ int bvec_val(bvec e)
  * \brief Frees all memory used by a boolean vector.
  *
  * Use this function to release any unused boolean vectors. The decrease of the reference
- * counts on the BDDs in \a v is done by \a bvec_free.
+ * counts on the BDDs in \a v is done by ::bvec_free.
  * 
  */
 void bvec_free(bvec v)
@@ -346,7 +346,7 @@ void bvec_free(bvec v)
  * \ingroup bvec
  * \brief Increase reference count of a boolean vector.
  *
- * Use this function to increase the reference count of all BDDs in a \a v. Please note that all
+ * Use this function to increase the reference count of all BDDs in \a v. Please note that all
  * boolean vectors returned from BuDDy are reference counted from the beginning.
  * 
  * \return The boolean vector \a v.
@@ -392,9 +392,9 @@ bvec bvec_delref(bvec v)
  * Maps the function \a fun onto all the elements in \a a. The value returned from \a fun is stored
  * in a new vector which is then returned. An example of a mapping function is ::bdd_not which
  * can be used like this 
- * \verbatim
+ * \code
  * bvec res = bvec_map1(a, bdd_not)
- * \endverbatim
+ * \endcode
  * to negate all the BDDs in \a a.
  * 
  * \return The new vector (which is already reference counted).
@@ -420,9 +420,9 @@ bvec bvec_map1(bvec a, BDD (*fun)(BDD))
  * Maps the function \a fun onto all the elements in \a a and \a b. The value returned from \a fun is
  * stored in a new vector which is then returned. An example of a mapping function is ::bdd_and
  * which can be used like this
- * \verbatim
+ * \code
  * bvec res = bvec_map2(a, b, bdd_and)
- * \endverbatim
+ * \endcode
  * to calculate the logical 'and' of all the BDDs in \a a and \a b.
  * 
  * \return The new vector (which is already reference counted).
@@ -455,9 +455,9 @@ bvec bvec_map2(bvec a, bvec b, BDD (*fun)(BDD,BDD))
  * Maps the function \a fun onto all the elements in \a a, \a b and \a c. The value returned from \a
  * fun is stored in a new vector which is then returned. An example of a mapping function is
  * ::bdd_ite which can be used like this
- * \verbatim
+ * \code
  * bvec res = bvec_map3(a, b, c, bdd_ite)
- * \endverbatim
+ * \endcode
  * to calculate the if-then-else function for each element in \a a, \a b and \a c.
  * 
  * \return The new vector (which is already reference counted).
@@ -493,7 +493,7 @@ bvec bvec_map3(bvec a, bvec b, bvec c, BDD (*fun)(BDD,BDD,BDD))
  * \f$x_i\f$ in the result will represent the function 
  * \f[ x_i = l_i\ \mbox{xor}\ r_i\ \mbox{xor}\ c_{i-1} \f] 
  * where the carry in \f$c_i\f$ is 
- * \f[ c_i = (l_i\ \mbox{and}\ r_i)\ \mbox{or}\ (c_{i-1}\ \mbox{and} \ (l_i\ \mbox{or}\ r_i)). \f] 
+ * \f[ c_i = (l_i\ \mbox{and}\ r_i)\ \mbox{or}\ (c_{i-1}\ \mbox{and} \ (l_i\ \mbox{or}\ r_i)) \f] 
  * It is important for efficency that the BDD
  * variables used in \a l and \a r are interleaved.
  * 
@@ -560,7 +560,7 @@ bvec bvec_add(bvec l, bvec r)
  * element \f$x_i\f$ in the result will represent the function 
  * \f[ x_i = l_i\ \mbox{xor}\ r_i\ \mbox{xor}\ c_{i-1} \f] 
  * where the carry in \f$c_i\f$ is 
- * \f[ c_i = (l_i\ \mbox{and}\ r_i\ \mbox{and}\ c_{i-1})\ \mbox{or}\ (\mbox{not}\ l_i\ \mbox{and} \ (r_i\ \mbox{or}\  * c_{i-1})). \f] 
+ * \f[ c_i = (l_i\ \mbox{and}\ r_i\ \mbox{and}\ c_{i-1})\ \mbox{or}\ (\mbox{not}\ l_i\ \mbox{and}\ (r_i\ \mbox{or}\ c_{i-1})) \f] 
  * It is important for efficency that the BDD variables used in \a l and \a r are
  * interleaved.
  * 
@@ -760,7 +760,7 @@ static void bvec_div_rec(bvec divisor, bvec *remainder, bvec *result, int step)
  * Builds a new boolean vector representing the integer division of \a e with \a c. The result of
  * the division will be stored in \a res and the remainder of the division will be stored in \a
  * rem. Both vectors should be initialized as the function will try to release the nodes used by
- * them. If an error occurs then the nodes will {\em not} be freed.
+ * them. If an error occurs then the nodes will \em not be freed.
  * 
  * \return Zero on success or a negative error code on error.
  * \see bvec_div, bvec_mul, bvec_add, bvec_shl
@@ -809,9 +809,9 @@ void p(bvec x)
  * \brief Builds a boolean vector for division.
  *
  * Builds a new boolean vector representing the integer division of \a l with \a r. The result of
- * the division will be stored in \a res and the remainder of the division will be stored in \a
- * rem. Both vectors should be initialized as the function will try to release the nodes used by
- * them. If an error occurs then the nodes will {\em not} be freed.
+ * the division will be stored in \a res and the remainder of the division will be stored in \a rem.
+ * Both vectors should be initialized as the function will try to release the nodes used by
+ * them. If an error occurs then the nodes will \em not be freed.
  * 
  * \return Zero on success or a negative error code on error.
  * \see bvec_mul, bvec_divfixed, bvec_add, bvec_shl
@@ -885,7 +885,7 @@ int bvec_div(bvec left, bvec right, bvec *result, bvec *remainder)
  * \brief Calculates the if-then-else operator for a boolean vector.
  *
  * Builds a vector where the bdd \a a has been applied bitwise to \a b and \a c in an if-then-else
- * operation, such that the result \f$r\f$ is: \[ r_i = ite(a,b_i,c_i); \].
+ * operation, such that the result \f$r\f$ is: \f[ r_i = ite(a,b_i,c_i); \f].
  * 
  * \return The if-then-else result.
  * \see bdd_ite
@@ -1140,7 +1140,7 @@ BVEC bvec_shr(BVEC l, BVEC r, BDD c)
  * \ingroup bvec
  * \brief Calculates the truth value of \f$x < y\f$.
  *
- * Returns the BDD representing \a l < r ({\em not} reference counted). Both vectors must have
+ * Returns the BDD representing \a l \< r (\em not reference counted). Both vectors must have
  * the same number of bits.
  * 
  * \see bvec_lte, bvec_gth, bvec_gte, bvec_equ, bvec_neq
@@ -1183,7 +1183,7 @@ bdd bvec_lth(bvec l, bvec r)
  * \ingroup bvec
  * \brief Calculates the truth value of \f$x \leq y\f$.
  *
- * Returns the BDD representing \a l \f$\leq\f$ \a r (\a not} reference counted). Both vectors
+ * Returns the BDD representing \a l \f$\leq\f$ \a r (\em not reference counted). Both vectors
  * must have the same number of bits.
  * 
  * \see bvec_lth, bvec_gth, bvec_gte, bvec_equ, bvec_neq
@@ -1226,7 +1226,7 @@ bdd bvec_lte(bvec l, bvec r)
  * \ingroup bvec
  * \brief Calculates the truth value of \f$x > y\f$.
  *
- * Returns the BDD representing \a l > r (\a not reference counted). Both vectors must have
+ * Returns the BDD representing \a l \> r (\em not reference counted). Both vectors must have
  * the same number of bits.
  * 
  * \see bvec_lth, bvec_lte, bvec_gte, bvec_equ, bvec_neq
@@ -1244,7 +1244,7 @@ bdd bvec_gth(bvec l, bvec r)
  * \ingroup bvec
  * \brief Calculates the truth value of \f$x \geq y \f$.
  *
- * Returns the BDD representing \a l \f$\geq\f$ \a r (\a not reference counted). Both vectors
+ * Returns the BDD representing \a l \f$\geq\f$ \a r (\em not reference counted). Both vectors
  * must have the same number of bits.
  * 
  * \see bvec_lth, bvec_gth, bvec_gth, bvec_equ, bvec_neq
@@ -1262,7 +1262,7 @@ bdd bvec_gte(bvec l, bvec r)
  * \ingroup bvec
  * \brief Calculates the truth value of \f$x = y \f$.
  *
- * Returns the BDD representing \a l = r (\a not reference counted). Both vectors must have
+ * Returns the BDD representing \a l = r (\em not reference counted). Both vectors must have
  * the same number of bits.
  * 
  * \see bvec_lth, bvec_lte, bvec_gth, bvec_gte, bvec_neq
@@ -1299,7 +1299,7 @@ bdd bvec_equ(bvec l, bvec r)
  * \ingroup bvec
  * \brief Calculates the truth value of \f$x \neq y\f$.
  *
- * Returns the BDD representing \a l\f$\neq\f$\a r (\a not reference counted). Both vectors
+ * Returns the BDD representing \a l\f$\neq\f$\a r (\em not reference counted). Both vectors
  * must have the same number of bits.
  * 
  * \see bvec_lte, bvec_lth, bvec_gth, bvec_gth, bvec_equ

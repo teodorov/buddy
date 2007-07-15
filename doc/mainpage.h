@@ -5,13 +5,12 @@
  * \defgroup bvec bvec
  * \defgroup fileio fileio
  * \defgroup operator operator
+ * \defgroup reorder reorder
  *
  * \mainpage BuDDy: A BDD package
  * \section section0 Programming with BuDDy 
  * First of all a program needs to call 
- * \verbatim
- * bdd_init(nodenum,cachesize)
- * \endverbatim
+ * \code bdd_init(nodenum,cachesize); \endcode
  * to initialize the BDD package. The \a nodenum parameter sets the initial number of BDD nodes and 
  * \a cachesize sets the size of the caches used for the BDD operators (not the
  * unique node table). These caches are used for ::bdd_apply among others.
@@ -37,28 +36,34 @@
  * ::bdd_extvarnum.
  *
  * The atomic functions for getting new BDD nodes are 
- * ::bdd_ithvar(i) and ::bdd_nithvar(i) which return references
+ * \c bdd_ithvar(i) and \c bdd_nithvar(i) which return references
  * to BDD nodes of the form \f$(v_i,0,1)\f$ and \f$(v_i,1,0)\f$. The nodes
  * constructed in this way correspond to the positive and negative
  * versions of a single variable.  Initially the variable order is \f$v_0 <
  * v_1 < \ldots < v_{n-1} < v_n\f$.
  *   
  * The BDDs returned from ::bdd_ithvar can then be used to form
- * new BDDs by calling ::bdd_apply(a,b,op) where \a op may be
- * ::bddop_and or any of the other operators defined in ::bdd.h.
- * The apply function performs the binary operation indicated by 
- * \a op. Use ::bdd_not to negate a BDD.  The result from 
- * ::bdd_apply and any other BDD operator \a must be handed over to
+ * new BDDs by calling \c bdd_apply(a,b,op) where \a op may be
+ * ::bddop_and or any of the other operators defined in bdd.h.
+ * The ::bdd_apply function performs the binary operation indicated by 
+ * \a op. Use ::bdd_not to negate a BDD. The result from 
+ * ::bdd_apply and any other BDD operator \em must be handed over to
  * ::bdd_addref to increase the reference count of the node before
  * any other operation is performed.  This is done to prevent the BDD
  * from being garbage collected. When a BDD is no longer in use, it can
- * be de-referenced by a call to ::bdd_delref.  The exceptions to
+ * be de-referenced by a call to ::bdd_delref. The exceptions to
  * this are the return values from ::bdd_ithvar and
  * ::bdd_nithvar. These do not need to be reference counted, although
  * it is not an error to do so. The use of the BDD package ends with a
- * call to ::bdd_done. See below for an example.
+ * call to ::bdd_done. 
  *
- * \verbatim
+ * The example below demonstrates the standard C interface to BuDDy. 
+ * In this mode both ::bdd and ::BDD can be used as BuDDy BDD types. The C interface requires the
+ * user to ensure garbage collection is handled correctly. This means
+ * calling ::bdd_addref every time a new BDD is created, and
+ * ::bdd_delref whenever a BDD is not in use anymore.
+
+ * \code
  * #include <bdd.h>
  *
  * main(void)
@@ -76,14 +81,15 @@
  *    bdd_delref(z);
  *    bdd_done();
  * }
- * \endverbatim
- * Standard C interface to BuDDy. In this mode both ::bdd and
- * ::BDD can be used as BuDDy BDD types. The C interface requires the
- * user to ensure garbage collection is handled correctly. This means
- * calling ::bdd_addref every time a new BDD is created, and
- * ::bdd_delref whenever a BDD is not in use anymore.
+ * \endcode
  *
- * \verbatim
+ * The following code demonstrates the C++ interface to BuDDy. 
+ * In this mode \c bdd is a C++ class that wraps a handler around the 
+ * standard C interface, and the \c BDD type referes to the standard C BDD type. 
+ * The C++ interface handles all garbage collection, so no calls to ::bdd_addref and
+ * ::bdd_delref are needed.
+ *
+ * \code
  * #include <bdd.h>
  *
  * main(void)
@@ -101,12 +107,7 @@
  *
  *    bdd_done();
  * }
- * \endverbatim
- * C++ interface to BuDDy. In this mode 'bdd' is a C++ class
- * that wraps a handler around the standard C interface, and the
- * 'BDD' type referes to the standard C BDD type. The C++ interface
- * handles all garbage collection, so no calls to ::bdd_addref and
- * ::bdd_delref are needed.
+ * \endcode
  *
  * Information on the BDDs can be found using the ::bdd_var,
  * ::bdd_low and ::bdd_high functions that returns the variable
@@ -115,12 +116,12 @@
  * Printing BDDs is done using the functions ::bdd_printall that
  * prints \a all used nodes, ::bdd_printtable that prints the
  * part of the nodetable that corresponds to a specific BDD and
- * :bdd_printset that prints a specific BDD as a list of elements in
+ * ::bdd_printset that prints a specific BDD as a list of elements in
  * a set (all paths ending in the true terminal).
 
  * \subsection  More Examples
 
- * More complex examples can be found in the ::buddy/examples directory.
+ * More complex examples can be found in the \c buddy/examples directory.
 
  * \section section1 Variable sets
 
@@ -135,7 +136,7 @@
  * If for example variable 1 and variable 3 are to be included in a set,
  * then it can be done in two ways, as shown below.
  *
- * \verbatim
+ * \code
  * #include <bdd.h>
 
  * main()
@@ -150,36 +151,24 @@
  *    v1 = bdd_ithvar(1);
  *    v3 = bdd_ithvar(3);
  *
- *       /* One way */
+ *       // One way 
  *    seta = bdd_addref( bdd_apply(v1,v3,bddop_and) );
  *    bdd_printtable(seta);
  *
- *       /* Another way */
+ *       // Another way 
  *    setb = bdd_addref( bdd_makeset(v,2) );
  *    bdd_printtable(setb);
  * }
- * \endverbatim
- * Two ways to create a variable set.
-
+ * \endcode
+ *
  * \section section2 Dynamic Variable Reordering
- * \verbatim
- * \begin{figure}
- *   \begin{center}
- *     \input{varblock.pstex_t}
- *     \caption{The variable tree for the variable blocks $v_0\ldots v_9$,
- *       $v_1\ldots v_8$, $v_1\ldots v_4$, $v_5\ldots v_8$, $v_1$, $v_2$,
- *       $v_3$ and $v_4$.}
- *     \label{fig:vartree}
- *   \end{center}
- * \end{figure}
- * \endverbatim
-
+ * 
  * Dynamic variable reordering can be done using the functions 
- * ::bdd_reorder(int method) and ::bdd_autoreorder(int method).
- * Where the parameter \a method, for instance can be
+ * \c bdd_reorder(int method) (::bd_reorder) and \c bdd_autoreorder(int method) (::bdd_autoreorder),
+ * where the parameter \a method, for instance can be
  * ::BDD_REORDER_WIN2ITE. The package must know how the BDD variables
  * are related to each other, so the user must define blocks of BDD
- * variables, using ::bdd_addvarblock(bdd var, int fixed). A block
+ * variables, using \c bdd_addvarblock(bdd var, int fixed) (::bdd_addvarblock). A block
  * is a range of BDD variables that should be kept together. It may
  * either be a simple contiguous sequence of variables or a sequence of
  * other blocks with ranges inside their parents range. In this way all
@@ -193,16 +182,19 @@
  * \f$v_1\ldots v_8\f$ block, similarly the block \f$v_5\ldots v_8\f$ would be a
  * child of the \f$v_1\ldots v_8\f$ block. If we add the variables \f$v_1\f$,
  * \f$v_2\f$, \f$v_3\f$ and \f$v_4\f$ as single variable blocks we at last get tree
- * showed in figure ref fig:vartree. If all variables should be added
+ * shown below. If all variables should be added
  * as single variable blocks then ::bdd_varblockall can be used
  * instead of doing it manually.
+ * 
+ * \image html varblock.png
+ * \image latex varblock.eps
 
  * The reordering algorithm is then to first reorder the top most blocks
  * and there after descend into each block and reorder these recursively,
  * unless the block is defined as a fixed block.
 
  * If the user want to control the swapping of variables himself, then
- * the functions ::bdd_swapvar, ::bdd_setvarorder may be used.
+ * the functions ::bdd_swapvar and ::bdd_setvarorder may be used.
  * But this is not possible in conjunction with the use of variable
  * blocks and the ::bdd_swapvar is unfortunately quite slow since a
  * full scan of all the nodes must be done both before and after the
@@ -214,7 +206,7 @@
  * If an error occurs then a check is done to see if there is any error
  * handler defined and if so it is called with the error code of
  * interest. The default error handler prints an error message on
- * \a stderr and then aborts the program. A handler can also be defined
+ * \c stderr and then aborts the program. A handler can also be defined
  * by the user with a call to ::bdd_error_hook.
  *   
  *   
@@ -225,22 +217,21 @@
  * root number stored in the ::bdd class. The names of these wrappers
  * are exactly the same as for the C functions. In addition to this a lot
  * of the C++ operators like | \& - = == are overloaded in order
- * to perform most of the ::bdd_apply() operations. These are listed
+ * to perform most of the ::bdd_apply operations. These are listed
  * together with ::bdd_apply. The rest are
 
  * \verbatim
- *      Operator Description Return value
- *      =        assignment 
- *      ==       test        returns 1 if two BDDs are equal, otherwise 0 
- *      !=       test        returns 0 if two BDDs are equal, otherwise 1 
- *      bdd.id() identity    returns the root number of the BDD 
- * \endverbatim
+       Operator Description Return value
+       =        assignment 
+       ==       test        returns 1 if two BDDs are equal, otherwise 0 
+       !=       test        returns 0 if two BDDs are equal, otherwise 1 
+       bdd.id() identity    returns the root number of the BDD \endverbatim
 
  * The default constructor for the ::bdd class initializes
  * the bdds to the constant false value.  Reference counting is totally
  * automatic when the ::bdd class is used, here the constructors and
- * destructors takes care of \a all reference counting!  The C++
- * interface is also defined in ::bdd.h so nothing extra is needed to
+ * destructors takes care of \em all reference counting!  The C++
+ * interface is also defined in bdd.h so nothing extra is needed to
  * use it.
 
  * \section section5 Finite Domain Blocks
@@ -255,59 +246,60 @@
  * The BDD representing identity between two sets of different domains
  * can be build using ::fdd_equals. BDDs representing finite domain
  * sets can be printed using ::fdd_printset and the overloaded C++
- * operator ::<<. Pairs for ::bdd_replace can be made using 
+ * operator \c <<. Pairs for ::bdd_replace can be made using 
  * ::fdd_setpair and variable sets can be made using ::fdd_ithset
  * and ::fdd_makeset. The finite domain block interface is defined
  * for both C and C++. To use this interface you must include ::fdd.h.
 
  * Encoding using FDDs are done with the Least Significant Bits first in
  * the ordering (top of the BDD). Assume variables \f$V_0 \ldots V_3\f$ are
- * used to encode the value \f$12\f$ - this would yield \f$V_0=0 , V_1=0 ,
- * V_2=1 , V_3=1\f$.
+ * used to encode the value 12 - this would yield \f$V_0=0, V_1=0,
+ * V_2=1, V_3=1\f$.
 
  * An example program using the FDD interface can be found in the
- * examples directory.
+ * \c examples directory.
 
  * \section section6 Boolean Vectors
 
  * Another interface layer for BuDDy implements
  * boolean vectors for use with integer arithmetics. A boolean vector is
  * simply an array of BDDs where each BDD represents one bit of an
- * expression. To use this interface you must include ::bvec.h. As
+ * expression. To use this interface you must include bvec.h. As
  * an example, suppose we want to express the following assignment from
  * an expression
- * \f[
- *   x := y + 10
- * \f]
+ * 
+ * \f[ x := y + 10 \f]
+ * 
  * what we do is to encode the variable \f$y\f$ and the
- * value \f$10\f$ as boolean vectors \f$y\f$ and \f$v\f$ of a fixed length. Assume we
+ * value 10 as boolean vectors \f$y\f$ and \f$v\f$ of a fixed length. Assume we
  * use four bits with LSB to the right, then we get
- * \f[
- *   y = \langle y_4, \ldots, y_1 \rangle
- * \f]
- * \f[
- *   v = \langle 1,0,1,0 \rangle
- * \f]
+ * 
+ * \f[ y = \langle y_4, \ldots, y_1 \rangle \f]
+ * 
+ * \f[ v = \langle 1,0,1,0 \rangle \f]
+ * 
  * where each \f$y_i\f$ is the BDD variable used to encode the integer
  * variable \f$y\f$. Now the result of the addition can be expressed as the
  * vector \f$z = \langle z_4, \ldots, z_1\rangle \f$ where each \f$z_i\f$ is:
- * \f[
- *   z_i = y_i\ \mbox{xor}\ v_i\ \mbox{xor}\ c_{i-1}
- * \f]
+ * 
+ * \f[ z_i = y_i\ \mbox{xor}\ v_i\ \mbox{xor}\ c_{i-1} \f]
+ * 
  * and the carry in \f$c_i\f$ is
- * \f[
- *   c_i = (y_i\ \mbox{and}\ v_i)\ \mbox{or}\ (c_{i-1}\ \mbox{and}
+ * 
+ * \f[ c_i = (y_i\ \mbox{and}\ v_i)\ \mbox{or}\ (c_{i-1}\ \mbox{and}
  *         \ (y_i\ \mbox{or}\ v_i)).
  * \f]
+ * 
  * with \f$c_0\f$ = 0. What is left now is to assign the result to \f$x\f$. This
  * is a conjunction of a biimplication of each element in the vectors, so
  * the result is
- * \f[
- *   R = \bigwedge_{i=1}^4 x_i \Leftrightarrow z_i.
- * \f]
+ * 
+ * \f[ R = \bigwedge_{i=1}^4 x_i \Leftrightarrow z_i. \f]
+ * 
  * The above example could be carried out with the following C++ program
  * that utilizes the FDD interface for printing the result.
- * \verbatim
+ * 
+ * \code
  * #include "bvec.h"
 
  * main()
@@ -329,12 +321,13 @@
 
  *    cout << fddset << result << endl << endl;
  * }
- * \endverbatim
+ * \endcode
 
  * The relational operators \f$<,>,\leq,\geq,=,\neq\f$ can also be
  * encoded. Assume we want to encode \f$x \leq y\f$ using the same
  * variables as in the above example. This would be done as:
- * \verbatim
+ * 
+ * \code
  * #include "bvec.h"
 
  * main()
@@ -351,15 +344,15 @@
 
  *    cout << fddset << result << endl << endl;
  * }
- * \endverbatim}
+ * \endcode
  
  * Please note that all vectors that are returned from any of the 
- * bvec_xxx functions are referenced counted by the system.
+ * \c bvec_xxx functions are referenced counted by the system.
 
  * \subsection C++ Interface
 
  * The C++ interface defines the class
- * \verbatim
+ * \code
  * class bvec
  * {
  *  public:
@@ -376,16 +369,16 @@
  *    int empty(void) const;
  *    bvec operator=(const bvec &src);
  * }   
- * \endverbatim
+ * \endcode
 
  * The default constructor makes an empty vector with no elements, the
- * integer constructor creates a vector with ::bitnum elements (all
+ * integer constructor creates a vector with \a bitnum elements (all
  * set to false) and the third constructor creates a vector with
  * \a bitnum elements and assigns the integer value \a val to the
- * vector. Reference counting is done automatically. The i'th element in
+ * vector. Reference counting is done automatically. The \a i'th element in
  * the vector can be changed with \a set and read with
- * \a operator[]. The number of bits can be found with \a bitnum and
- * the method \a empty returns true if the vector is a NULL vector.
+ * \c operator[]. The number of bits can be found with \a bitnum and
+ * the method \a empty returns true if the vector is a \c NULL vector.
 
   * \section section7 Efficiency Concerns
 
@@ -394,11 +387,11 @@
  * and it also helps if you have some knowledge of the internals of the
  * package.
 
- * First of all --- a good initial variable order is a must. Using the
+ *  - First of all, a good initial variable order is a must. Using the
  * automatic reordering methods may be an easy solution, but without a
  * good initial order it may also be a waste of time.
 
- * Second --- memory is speed. If you allocate as much memory as possible
+ *  - Second, memory is speed. If you allocate as much memory as possible
  * from the very beginning, then BuDDy does not have to waste time trying to
  * allocate more whenever it is needed. So if you really want speed then
  * ::bdd_init should be called with as many nodes as possible. This
@@ -406,7 +399,7 @@
  * becomes extremely slow since it has to reorder an enormous amount of
  * nodes the first time it is triggered.
 
- * Third --- the operator caches should be as big as possible. Use the
+ *  - Third, the operator caches should be as big as possible. Use the
  * function ::bdd_setcacheratio to make sure the size of these is
  * increased whenever more nodes are allocated. Please note that
  * BuDDy uses a fixed number of elements for these caches as default.
@@ -414,14 +407,14 @@
  * cache ratio of 1:64 fitting for BDDs of more than one million nodes
  * (the solitare example). This may be a bit overkill, but it works.
 
- * Fourth --- BuDDy allocates by default a maximum of 50000 nodes (1Mb
+ *  - Fourth, BuDDy allocates by default a maximum of 50000 nodes (1Mb
  * RAM) every time it resizes the node table. If your problem needs
  * millions of nodes, then this is way too small a number. Use 
  * ::bdd_setmaxincrease to increase this number. In the solitare
  * example something like 5000000 nodes seems more reasonable.
 
- * Fifth --- by default, BuDDy increases the node table whenever there is
- * less than 20% nodes free. By increasing this value you can make BuDDy
+ *  - Fifth, by default, BuDDy increases the node table whenever there is
+ * less than 20\% nodes free. By increasing this value you can make BuDDy
  * go faster and use more memory or vice versa. You can change the value
  * with ::bdd_setminfreenodes.
 

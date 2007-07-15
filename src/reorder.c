@@ -1,3 +1,5 @@
+/** \file reorder.c
+ */
 /*========================================================================
                Copyright (C) 1996-2002 by Jorn Lind-Nielsen
                             All rights reserved
@@ -1502,23 +1504,20 @@ static int reorder_vardown(int var)
   User reordering interface
 *************************************************************************/
 
-/*
-NAME    {* bdd\_swapvar *}
-SECTION {* reorder *}
-SHORT   {* Swap two BDD variables *}
-PROTO   {* int bdd_swapvar(int v1, int v2) *}
-DESCR   {* Use {\tt bdd\_swapvar} to swap the position (in the current
-           variable order) of the two BDD
-           variables {\tt v1} and {\tt v2}. There are no constraints on the
-	   position of the two variables before the call. This function may
-	   {\em not} be used together with user defined variable blocks.
-	   The swap is done by a series of adjacent variable swaps and
-	   requires the whole node table to be rehashed twice for each call
-	   to {\tt bdd\_swapvar}. It should therefore not be used were
-	   efficiency is a major concern. *}
-RETURN  {* Zero on succes and a negative error code otherwise. *}
-ALSO    {* bdd\_reorder, bdd\_addvarblock *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Swap two bdd variables.
+ *
+ * Use ::bdd_swapvar to swap the position (in the current variable order) of the two BDD
+ * variables \a v1 and \a v2. There are no constraints on the position of the two variables
+ * before the call. This function may \em not be used together with user defined variable
+ * blocks. The swap is done by a series of adjacent variable swaps and requires the whole node
+ * table to be rehashed twice for each call to ::bdd_swapvar. It should therefore not be used
+ * were efficiency is a major concern.
+ * 
+ * \return Zero on success and a negative error code otherwise.
+ * \see bdd_reorder, bdd_addvarblock
+ */
 int bdd_swapvar(int v1, int v2)
 {
    int l1, l2;
@@ -1585,30 +1584,29 @@ void bdd_default_reohandler(int prestate)
 }
 
 
-/*
-NAME    {* bdd\_disable\_reorder *}
-SECTION {* reorder *}
-SHORT   {* Disable automatic reordering *}
-PROTO   {* void bdd_disable_reorder(void) *}
-DESCR   {* Disables automatic reordering until {\tt bdd\_enable\_reorder}
-           is called. Reordering is enabled by default as soon as any variable
-	   blocks have been defined. *}
-ALSO    {* bdd\_enable\_reorder *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Disable automatic reordering.
+ *
+ * Disables automatic reordering until ::bdd_enable_reorder is called. Reordering is
+ * enabled by default as soon as any variable blocks have been defined.
+ * 
+ * \see bdd_enable_reorder
+ */
 void bdd_disable_reorder(void)
 {
    reorderdisabled = 1;
 }
 
 
-/*
-NAME    {* bdd\_enable\_reorder *}
-SECTION {* reorder *}
-SHORT   {* Enables automatic reordering *}
-PROTO   {* void bdd_enable_reorder(void) *}
-DESCR   {* Re-enables reordering after a call to {\tt bdd\_disable\_reorder}. *}
-ALSO    {* bdd\_disable\_reorder *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Enables automatic reordering.
+ *
+ * Re-enables reordering after a call to ::bdd_disable_reorder.
+ * 
+ * \see bdd_disable_reorder
+ */
 void bdd_enable_reorder(void)
 {
    reorderdisabled = 0;
@@ -1763,41 +1761,36 @@ static BddTree *reorder_block(BddTree *t, int method)
 }
 
 
-/*
-NAME    {* bdd\_reorder *}
-SECTION {* reorder *}
-SHORT   {* start dynamic reordering *}
-PROTO   {* void bdd_reorder(int method) *}
-DESCR   {* This function initiates dynamic reordering using the heuristic
-           defined by {\tt method}, which may be one of the following
-	   \begin{description}
-	     \item {\tt BDD\_REORDER\_WIN2}\\
-	       Reordering using a sliding window of size 2. This algorithm
-	       swaps two adjacent variable blocks and if this results in
-	       more nodes then the two blocks are swapped back again.
-	       Otherwise the result is kept in the variable order. This is
-	       then repeated for all variable blocks.
-	     \item {\tt BDD\_REORDER\_WIN2ITE}\\
-	       The same as above but the process is repeated until no further
-	       progress is done. Usually a fast and efficient method.
-	     \item {\tt BDD\_REORDER\_WIN3}\\
-	       The same as above but with a window size of 3.
-	     \item {\tt BDD\_REORDER\_WIN2ITE}\\
-	       The same as above but with a window size of 3.
-	     \item {\tt BDD\_REORDER\_SIFT}\\
-	       Reordering where each block is moved through all possible
-	       positions. The best of these is then used as the new position.
-	       Potentially a very slow but good method.
-	     \item {\tt BDD\_REORDER\_SIFTITE}\\
-	       The same as above but the process is repeated until no further
-	       progress is done. Can be extremely slow.
-	     \item {\tt BDD\_REORDER\_RANDOM}\\
-	       Mostly used for debugging purpose, but may be usefull for
-	       others. Selects a random position for each variable.
-	   \end{description}
-	   *}
-ALSO    {* bdd\_autoreorder, bdd\_reorder\_verbose, bdd\_addvarblock, bdd\_clrvarblocks *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Start dynamic reordering.
+ *
+ * This function initiates dynamic reordering using the heuristic defined by \a method,
+ * which may be one of the following:
+ * - \a BDD_REORDER_WIN2 \n
+ *   Reordering using a sliding window of size 2. This algorithm swaps two adjacent variable
+ *   blocks and if this results in more nodes then the two blocks are swapped back again.
+ *   Otherwise the result is kept in the variable order. This is then repeated for all variable
+ *   blocks. 
+ * - \a BDD_REORDER_WIN2ITE \n
+ *   The same as above but the process is repeated until
+ *   no further progress is done. Usually a fast and efficient method. 
+ * - \a BDD_REORDER_WIN3 \n
+ *   The same as above but with a window size of 3. 
+ * - \a BDD_REORDER_WIN2ITE \n
+ *   The same as above but with a window size of 3. 
+ * - \a BDD_REORDER_SIFT \n 
+ *   Reordering where each block is moved through all possible positions.
+ *   The best of these is then used as the new position. Potentially a very slow but good method.
+ * - \a BDD_REORDER_SIFTITE \n
+ *   The same as above but the process is repeated until no
+ *   further progress is done. Can be extremely slow.
+ * - \a BDD_REORDER_RANDOM \n
+ *   Mostly used for debugging purpose, but may be usefull for others. Selects a random position for
+ *   each variable.
+ * 
+ * \see bdd_autoreorder, bdd_reorder_verbose, bdd_addvarblock, bdd_clrvarblocks
+ */
 void bdd_reorder(int method)
 {
    BddTree *top;
@@ -1832,18 +1825,16 @@ void bdd_reorder(int method)
 }
 
 
-/*
-NAME    {* bdd\_reorder\_gain *}
-SECTION {* reorder *}
-SHORT   {* Calculate the gain in size after a reordering *}
-PROTO   {* int bdd_reorder_gain(void) *}
-DESCR   {* Returns the gain in percent of the previous number of used
-           nodes. The value returned is
-	   \[ (100 * (A - B)) / A \]
-	   Where $A$ is previous number of used nodes and $B$ is current
-	   number of used nodes.
-	*}
-*/
+/**
+ * \ingroup reorder
+ * \brief Calculate the gain in size after a reordering.
+ *
+ * Returns the gain in percent of the previous number of used nodes. The value returned is 
+ * \f[ (100 * (A - B)) / A \f] 
+ * Where \f$A\f$ is previous number of used nodes and \f$B\f$ is current number of used
+ * nodes.
+ * 
+ */
 int bdd_reorder_gain(void)
 {
    if (usednum_before == 0)
@@ -1853,33 +1844,28 @@ int bdd_reorder_gain(void)
 }
 
 
-/*
-NAME    {* bdd\_reorder\_hook *}
-SECTION {* reorder *}
-SHORT   {* sets a handler for automatic reorderings *}
-PROTO   {* bddinthandler bdd_reorder_hook(bddinthandler handler) *}
-DESCR   {* Whenever automatic reordering is done, a check is done to see
-           if the user has supplied a handler for that event. If so then
-	   it is called with the argument {\tt prestate} being 1 if the
-	   handler is called immediately {\em before} reordering and
-	   {\tt prestate} being 0 if it is called immediately after.
-	   The default handler is
-	   {\tt bdd\_default\_reohandler} which will print information
-	   about the reordering.
-
-	   A typical handler could look like this:
-	   \begin{verbatim}
-void reorderhandler(int prestate)
-{
-   if (prestate)
-      printf("Start reordering");
-   else
-      printf("End reordering");
-}
-\end{verbatim} *}
-RETURN  {* The previous handler *}
-ALSO    {* bdd\_reorder, bdd\_autoreorder, bdd\_resize\_hook *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Sets a handler for automatic reorderings.
+ *
+ * Whenever automatic reordering is done, a check is done to see if the user has supplied a
+ * handler for that event. If so then it is called with the argument \a prestate being 1 if the
+ * handler is called immediately \em before reordering and \a prestate being 0 if it is
+ * called immediately after. The default handler is ::bdd_default_reohandler which will
+ * print information about the reordering. A typical handler could look like this:
+ * \code
+ * void reorderhandler(int prestate) 
+ * { 
+ *   if (prestate) 
+ *     printf("Start reordering"); 
+ *   else 
+ *     printf("End reordering"); 
+ * }
+ * \endcode
+ * 
+ * \return The previous handler.
+ * \see bdd_reorder, bdd_autoreorder, bdd_resize_hook
+ */
 bddinthandler bdd_reorder_hook(bddinthandler handler)
 {
    bddinthandler tmp = reorder_handler;
@@ -1888,31 +1874,28 @@ bddinthandler bdd_reorder_hook(bddinthandler handler)
 }
 
 
-/*
-NAME    {* bdd\_blockfile\_hook *}
-SECTION {* reorder *}
-SHORT   {* Specifies a printing callback handler *}
-PROTO   {* bddfilehandler bdd_blockfile_hook(bddfilehandler handler) *}
-DESCR   {* A printing callback handler is used to convert the variable
-           block identifiers into something readable by the end user. Use
-	   {\tt bdd\_blockfile\_hook} to pass a handler to BuDDy. A typical
-	   handler could look like this:
-\begin{verbatim}
-void printhandler(FILE *o, int block)
-{
-   extern char **blocknames;
-   fprintf(o, "%s", blocknames[block]);
-}
-\end{verbatim}
-           \noindent
-           The handler is then called from {\tt bdd\_printorder} and
-	   {\tt bdd\_reorder} (depending on the verbose level) with
-           the block numbers returned by {\tt bdd\_addvarblock} as arguments.
-	   No default handler is supplied. The argument {\tt handler} may be
-	   NULL if no handler is needed. *}
-RETURN  {* The old handler *}
-ALSO    {* bdd\_printorder *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Specifies a printing callback handler.
+ *
+ * A printing callback handler is used to convert the variable block identifiers into
+ * something readable by the end user. Use ::bdd_blockfile_hook to pass a handler to BuDDy. A
+ * typical handler could look like this: 
+ * \code 
+ * void printhandler(FILE *o, int * block)
+ * { 
+ *   extern char **blocknames; 
+ *   fprintf(o, "%s", blocknames[block]); 
+ * }
+ * \endcode
+ * The handler is then called from ::bdd_printorder and
+ * ::bdd_reorder (depending on the verbose level) with the block numbers returned by
+ * ::bdd_addvarblock as arguments. No default handler is supplied. The argument \a handler
+ * may be \c NULL if no handler is needed.
+ * 
+ * \return The old handler.
+ * \see bdd_printorder
+ */
 bddfilehandler bdd_blockfile_hook(bddfilehandler handler)
 {
    bddfilehandler tmp = reorder_filehandler;
@@ -1921,29 +1904,19 @@ bddfilehandler bdd_blockfile_hook(bddfilehandler handler)
 }
 
 
-/*
-NAME    {* bdd\_autoreorder *}
-EXTRA   {* bdd\_autoreorder\_times *}
-SECTION {* reorder *}
-SHORT   {* enables automatic reordering *}
-PROTO   {* int bdd_autoreorder(int method)
-int bdd_autoreorder_times(int method, int num) *}
-DESCR   {* Enables automatic reordering using {\tt method} as the reordering
-           method. If {\tt method} is {\tt BDD\_REORDER\_NONE} then
-           automatic reordering is disabled. Automatic
-	   reordering is done every time the number of active nodes in the
-	   node table has been doubled and works by interrupting the current
-	   BDD operation, doing the reordering and the retrying the operation.
-
-	   In the second form the argument {\tt num} specifies the allowed
-	   number of reorderings. So if for example a "one shot" reordering
-	   is needed, then the {\tt num} argument would be set to one.
-
-	   Values for {\tt method} can be found under {\tt bdd\_reorder}.
-	   *}
-RETURN  {* Returns the old value of {\tt method} *}
-ALSO    {* bdd\_reorder *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Enables automatic reordering.
+ *
+ * Enables automatic reordering using \a method as the reordering method. If \a method is 
+ * \c BDD_REORDER_NONE then automatic reordering is disabled. Automatic reordering is done
+ * every time the number of active nodes in the node table has been doubled and works by
+ * interrupting the current BDD operation, doing the reordering and the retrying the
+ * operation. Values for \a method can be found under ::bdd_reorder.
+ * 
+ * \return Returns the old value of \a method.
+ * \see bdd_reorder
+ */
 int bdd_autoreorder(int method)
 {
    int tmp = bddreordermethod;
@@ -1952,8 +1925,22 @@ int bdd_autoreorder(int method)
    return tmp;
 }
 
-
-int bdd_autoreorder_times(int method, int num)
+/**
+ * \ingroup reorder
+ * \brief Enables automatic reordering.
+ *
+ * Enables automatic reordering using \a method as the reordering method. If \a method is 
+ * \c BDD_REORDER_NONE then automatic reordering is disabled. Automatic reordering is done
+ * every time the number of active nodes in the node table has been doubled and works by
+ * interrupting the current BDD operation, doing the reordering and the retrying the
+ * operation. In this form the argument \a num specifies the allowed number of
+ * reorderings. So if for example a "one shot" reordering is needed, then the \a num argument
+ * would be set to one. Values for \a method can be found under ::bdd_reorder.
+ * 
+ * \return Returns the old value of \a method.
+ * \see bdd_reorder
+ */
+ int bdd_autoreorder_times(int method, int num)
 {
    int tmp = bddreordermethod;
    bddreordermethod = method;
@@ -1962,15 +1949,14 @@ int bdd_autoreorder_times(int method, int num)
 }
 
 
-/*
-NAME    {* bdd\_var2level *}
-SECTION {* reorder *}
-SHORT   {* Fetch the level of a specific BDD variable *}
-PROTO   {* int bdd_var2level(int var) *}
-DESCR   {* Returns the position of the variable {\tt var} in the current
-           variable order. *}
-ALSO    {* bdd\_reorder, bdd\_level2var *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Fetch the level of a specific bdd variable.
+ *
+ * Returns the position of the variable \a var in the current variable order.
+ * 
+ * \see bdd_reorder, bdd_level2var
+ */
 int bdd_var2level(int var)
 {
    if (var < 0  ||  var >= bddvarnum)
@@ -1980,15 +1966,14 @@ int bdd_var2level(int var)
 }
 
 
-/*
-NAME    {* bdd\_level2var *}
-SECTION {* reorder *}
-SHORT   {* Fetch the variable number of a specific level *}
-PROTO   {* int bdd_level2var(int level) *}
-DESCR   {* Returns the variable placed at position {\tt level} in the
-           current variable order. *}
-ALSO    {* bdd\_reorder, bdd\_var2level *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Fetch the variable number of a specific level.
+ *
+ * Returns the variable placed at position \a level in the current variable order.
+ * 
+ * \see bdd_reorder, bdd_var2level
+ */
 int bdd_level2var(int level)
 {
    if (level < 0  ||  level >= bddvarnum)
@@ -1998,49 +1983,47 @@ int bdd_level2var(int level)
 }
 
 
-/*
-NAME    {* bdd\_getreorder\_times *}
-SECTION {* reorder *}
-SHORT   {* Fetch the current number of allowed reorderings *}
-PROTO   {* int bdd_getreorder_times(void) *}
-DESCR   {* Returns the current number of allowed reorderings left. This
-           value can be defined by {\tt bdd\_autoreorder\_times}. *}
-ALSO    {* bdd\_reorder\_times, bdd\_getreorder\_method *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Fetch the current number of allowed reorderings.
+ *
+ * Returns the current number of allowed reorderings left. This value can be defined by
+ * ::bdd_autoreorder_times.
+ * 
+ * \see bdd_reorder_times, bdd_getreorder_method
+ */
 int bdd_getreorder_times(void)
 {
    return bddreordertimes;
 }
 
 
-/*
-NAME    {* bdd\_getreorder\_method *}
-SECTION {* reorder *}
-SHORT   {* Fetch the current reorder method *}
-PROTO   {* int bdd_getreorder_method(void) *}
-DESCR   {* Returns the current reorder method as defined by
-           {\tt bdd\_autoreorder}. *}
-ALSO    {* bdd\_reorder, bdd\_getreorder\_times *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Fetch the current reorder method.
+ *
+ * Returns the current reorder method as defined by ::bdd_autoreorder.
+ * 
+ * \see bdd_reorder, bdd_getreorder_times
+ */
 int bdd_getreorder_method(void)
 {
    return bddreordermethod;
 }
 
 
-/*
-NAME    {* bdd\_reorder\_verbose *}
-SECTION {* reorder *}
-SHORT   {* enables verbose information about reorderings *}
-PROTO   {* int bdd_reorder_verbose(int v) *}
-DESCR   {* With {\tt bdd\_reorder\_verbose} it is possible to set the level
-           of information which should be printed during reordering. A value
-	   of zero means no information, a value of one means some information
-	   and any greater value will result in a lot of reordering
-	   information. The default value is zero. *}
-RETURN  {* The old verbose level *}
-ALSO    {* bdd\_reorder *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Enables verbose information about reorderings.
+ *
+ * With ::bdd_reorder_verbose it is possible to set the level of information which should be
+ * printed during reordering. A value of zero means no information, a value of one means some
+ * information and any greater value will result in a lot of reordering information. The
+ * default value is zero.
+ * 
+ * \return The old verbose level.
+ * \see bdd_reorder
+ */
 int bdd_reorder_verbose(int v)
 {
    int tmp = verbose;
@@ -2049,31 +2032,27 @@ int bdd_reorder_verbose(int v)
 }
 
 
-/*
-NAME    {* bdd\_reorder\_probe *}
-SECTION {* reorder *}
-SHORT   {* Define a handler for minimization of BDDs *}
-PROTO   {* bddsizehandler bdd_reorder_probe(bddsizehandler handler) *}
-DESCR   {* Reordering is typically done to minimize the global number of
-           BDD nodes in use, but it may in some cases be usefull to minimize
-	   with respect to a specific BDD. With {\tt bdd\_reorder\_probe} it
-	   is possible to define a callback function that calculates the
-	   size of a specific BDD (or anything else in fact). This handler
-	   will then be called by the reordering functions to get the current
-	   size information. A typical handle could look like this:
-\begin{verbatim}
-int sizehandler(void)
-{
-   extern BDD mybdd;
-   return bdd_nodecount(mybdd);
-}
-\end{verbatim}
-	   No default handler is supplied. The argument {\tt handler} may be
-	   NULL if no handler is needed. *}
-	   *}
-RETURN  {* The old handler *}
-ALSO    {* bdd\_reorder *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Define a handler for minimization of bdds.
+ *
+ * Reordering is typically done to minimize the global number of BDD nodes in use, but it may in
+ * some cases be usefull to minimize with respect to a specific BDD. With ::bdd_reorder_probe
+ * it is possible to define a callback function that calculates the size of a specific BDD (or
+ * anything else in fact). This handler will then be called by the reordering functions to get
+ * the current size information. A typical handle could look like this: 
+ * \code 
+ * int * sizehandler(void) 
+ * { 
+ *   extern BDD mybdd; 
+ *   return bdd_nodecount(mybdd); 
+ * } 
+ * \endcode 
+ * No default handler is supplied. The argument \a handler may be \c NULL if no handler is needed.
+ * 
+ * \return The old handler.
+ * \see bdd_reorder
+ */
 bddsizehandler bdd_reorder_probe(bddsizehandler handler)
 {
    bddsizehandler old = reorder_nodenum;
@@ -2084,15 +2063,14 @@ bddsizehandler bdd_reorder_probe(bddsizehandler handler)
 }
 
 
-/*
-NAME    {* bdd\_clrvarblocks *}
-SECTION {* reorder *}
-SHORT   {* clears all variable blocks *}
-PROTO   {* void bdd_clrvarblocks(void) *}
-DESCR   {* Clears all the variable blocks that has been defined by calls
-           to bdd\_addvarblock. *}
-ALSO    {* bdd\_addvarblock *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Clears all variable blocks.
+ *
+ * Clears all the variable blocks that has been defined by calls to ::bdd_addvarblock.
+ * 
+ * \see bdd_addvarblock
+ */
 void bdd_clrvarblocks(void)
 {
    bddtree_del(vartree);
@@ -2101,41 +2079,31 @@ void bdd_clrvarblocks(void)
 }
 
 
-/*
-NAME    {* bdd\_addvarblock *}
-EXTRA   {* bdd\_intaddvarblock *}
-SECTION {* reorder *}
-SHORT   {* adds a new variable block for reordering *}
-PROTO   {* int bdd_addvarblock(BDD var, int fixed)
-int bdd_intaddvarblock(int first, int last, int fixed) *}
-DESCR   {* Creates a new variable block with the variables in the variable
-           set {\tt var}. The variables in {\tt var} must be contiguous.
-	   In the second form the argument {\tt first} is the first variable
-	   included in the block and {\tt last} is the last variable included
-	   in the block. This order does not depend on current variable
-	   order.
-
-	   The variable blocks are ordered as a tree, with the largest
-	   ranges at top and the smallest at the bottom. Example: Assume
-	   the block 0-9 is added as the first block and then the block 0-6.
-	   This yields the 0-9 block at the top, with the 0-6 block as a
-	   child. If now the block 2-4 was added, it would become a child
-	   of the 0-6 block. A block of 0-8 would be a child of the 0-9
-	   block and have the 0-6 block as a child. Partially overlapping
-	   blocks are not allowed.
-
-	   The {\tt fixed} parameter sets the block to be fixed (no
-	   reordering of its child blocks is allowed) or free, using
-	   the constants {\tt BDD\_REORDER\_FIXED} and {\tt
-	   BDD\_REORDER\_FREE}.  Reordering is always done on the top
-	   most blocks first and then recursively downwards.
-
-	   The return value is an integer that can be used to identify
-	   the block later on - with for example {\tt bdd\_blockfile\_hook}.
-	   The values returned will be in the sequence $0,1,2,3,\ldots$.
-	   *}
-RETURN  {* A non-negative identifier on success, otherwise a negative error code. *}
-ALSO {* bdd\_varblockall, fdd\_intaddvarblock, bdd\_clrvarblocks *} */
+/**
+ * \ingroup reorder
+ * \brief Adds a new variable block for reordering.
+ *
+ * Creates a new variable block with the variables in the variable set \a b. The variables in
+ * \a b must be contiguous. This order does
+ * not depend on current variable order. The variable blocks are ordered as a tree, with the
+ * largest ranges at top and the smallest at the bottom. 
+ * 
+ * Example: Assume the block 0-9 is added
+ * as the first block and then the block 0-6. This yields the 0-9 block at the top, with the 0-6
+ * block as a child. If now the block 2-4 was added, it would become a child of the 0-6 block. A
+ * block of 0-8 would be a child of the 0-9 block and have the 0-6 block as a child. 
+ * 
+ * Partially
+ * overlapping blocks are not allowed. The \a fixed parameter sets the block to be fixed (no
+ * reordering of its child blocks is allowed) or free, using the constants 
+ * \c BDD_REORDER_FIXED and \c BDD_REORDER_FREE. Reordering is always done on the top most
+ * blocks first and then recursively downwards. The return value is an integer that can be used
+ * to identify the block later on - with for example ::bdd_blockfile_hook. The values
+ * returned will be in the sequence \f$0,1,2,3,\ldots\f$.
+ * 
+ * \return A non-negative identifier on success, otherwise a negative error code.
+ * \see bdd_varblockall, fdd_intaddvarblock, bdd_clrvarblocks
+ */
 int bdd_addvarblock(BDD b, int fixed)
 {
    BddTree *t;
@@ -2165,6 +2133,31 @@ int bdd_addvarblock(BDD b, int fixed)
 }
 
 
+/**
+ * \ingroup reorder
+ * \brief Adds a new variable block for reordering.
+ *
+ * Creates a new variable block, where the argument \a first is the first variable
+ * included in the block and \a last is the last variable included in the block. This order does
+ * not depend on current variable order. The variable blocks are ordered as a tree, with the
+ * largest ranges at top and the smallest at the bottom. 
+ * 
+ * Example: Assume the block 0-9 is added
+ * as the first block and then the block 0-6. This yields the 0-9 block at the top, with the 0-6
+ * block as a child. If now the block 2-4 was added, it would become a child of the 0-6 block. A
+ * block of 0-8 would be a child of the 0-9 block and have the 0-6 block as a child. 
+ * 
+ * Partially
+ * overlapping blocks are not allowed. The \a fixed parameter sets the block to be fixed (no
+ * reordering of its child blocks is allowed) or free, using the constants \a
+ * BDD_REORDER_FIXED and \a BDD_REORDER_FREE. Reordering is always done on the top most
+ * blocks first and then recursively downwards. The return value is an integer that can be used
+ * to identify the block later on - with for example ::bdd_blockfile_hook. The values
+ * returned will be in the sequence \f$0,1,2,3,\ldots\f$.
+ * 
+ * \return A non-negative identifier on success, otherwise a negative error code.
+ * \see bdd_varblockall, fdd_intaddvarblock, bdd_clrvarblocks
+ */
 int bdd_intaddvarblock(int first, int last, int fixed)
 {
    BddTree *t;
@@ -2180,18 +2173,17 @@ int bdd_intaddvarblock(int first, int last, int fixed)
 }
 
 
-/*
-NAME    {* bdd\_varblockall *}
-SECTION {* reorder *}
-SHORT   {* add a variable block for all variables *}
-PROTO   {* void bdd_varblockall(void) *}
-DESCR   {* Adds a variable block for all BDD variables declared so far.
-           Each block contains one variable only. More variable blocks
-	   can be added later with the use of {\tt bdd\_addvarblock} --
-	   in this case the tree of variable blocks will have the blocks
-	   of single variables as the leafs. *}
-ALSO    {* bdd\_addvarblock, bdd\_intaddvarblock *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Add a variable block for all variables.
+ *
+ * Adds a variable block for all BDD variables declared so far. Each block contains one
+ * variable only. More variable blocks can be added later with the use of ::bdd_addvarblock --
+ * in this case the tree of variable blocks will have the blocks of single variables as the
+ * leafs.
+ * 
+ * \see bdd_addvarblock, bdd_intaddvarblock
+ */
 void bdd_varblockall(void)
 {
    int n;
@@ -2201,52 +2193,40 @@ void bdd_varblockall(void)
 }
 
 
-/*
-NAME    {* bdd\_printorder *}
-SECTION {* reorder *}
-SHORT   {* prints the current order *}
-PROTO   {* void bdd_printorder(void)
-bdd_fprint_order(FILE *f)*}
-DESCR   {* Prints an indented list of the variable blocks, showing the top
-           most blocks to the left and the lower blocks to the right.
-	   Example:\\
-	   \begin{verbatim}
-  2{
-     0
-     1
-  2}
-  3
-  4
-\end{verbatim}
-           This shows 5 variable blocks. The first one added is block zero,
-	   which is on the same level as block one. These two blocks are then
-	   sub-blocks of block two and block two is on the same level as
-	   block three and four. The numbers are the identifiers returned
-	   from {\tt bdd\_addvarblock}. The block levels depends on the
-	   variables included in the blocks.
-	   *}
-ALSO    {* bdd\_reorder, bdd\_addvarblock *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Prints the current order.
+ *
+ * Prints an indented list of the variable blocks, showing the top most blocks to the left and
+ * the lower blocks to the right. Example:
+ * \verbatim
+ * 2{ 0 1 2} 3 4 
+ * \endverbatim
+ * This shows 5 variable blocks. The first one added is block zero, which is on the same level as block
+ * one. These two blocks are then sub-blocks of block two and block two is on the same level as
+ * block three and four. The numbers are the identifiers returned from ::bdd_addvarblock.
+ * The block levels depends on the variables included in the blocks.
+ * 
+ * \see bdd_reorder, bdd_addvarblock
+ */
 void bdd_printorder(void)
 {
    bdd_fprintorder(stdout);
 }
 
 
-/*
-NAME    {* bdd\_setvarorder *}
-SECTION {* reorder *}
-SHORT   {* set a specific variable order *}
-PROTO   {* void bdd_setvarorder(int *neworder) *}
-DESCR   {* This function sets the current variable order to be the one
-           defined by {\tt neworder}. The parameter {\tt neworder} is
-	   interpreted as a sequence of variable indecies and the new
-	   variable order is exactly this sequence. The array {\em must}
-	   contain all the variables defined so far. If for instance the
-	   current number of variables is 3 and {\tt neworder} contains
-	   $[1,0,2]$ then the new variable order is $v_1 < v_0 < v_2$. *}
-ALSO    {* bdd\_reorder, bdd\_printorder *}
-*/
+/**
+ * \ingroup reorder
+ * \brief Set a specific variable order.
+ *
+ * This function sets the current variable order to be the one defined by \a neworder. The
+ * parameter \a neworder is interpreted as a sequence of variable indecies and the new
+ * variable order is exactly this sequence. The array \em must contain all the variables
+ * defined so far. If for instance the current number of variables is 3 and \a neworder contains
+ * \f$[1,0,2]\f$ then the new variable order is \f$v_1 < v_0 < v_2\f$.
+ * 
+ * \see bdd_reorder, bdd_printorder
+ */
 void bdd_setvarorder(int *neworder)
 {
    int level;

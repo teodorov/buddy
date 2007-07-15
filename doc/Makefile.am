@@ -5,3 +5,6 @@ EXTRA_DIST = \
 
 html-local:
 	doxygen conf.doxyfile
+
+clean-local:
+	-rm -rf html
