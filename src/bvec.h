@@ -68,38 +68,437 @@ extern "C" {
 #endif
    
    /* Prototypes for bvec.c */
+
+/**
+ * \ingroup bvec
+ * \brief Create a copy of a bvec.
+ *
+ * Returns a copy of \a src. The result is reference counted.
+ * 
+ * \see bvec_con
+ */
 extern BVEC bvec_copy(BVEC v);
+
+
+/**
+ * \ingroup bvec
+ * \brief Build a vector of constant true bdds.
+ *
+ * Builds a boolean vector with \a bitnum elements, each of which are the constant true BDD.
+ * 
+ * \return The boolean vector (which is already reference counted).
+ * \see bvec_false, bvec_con, bvec_var
+ */
 extern BVEC bvec_true(int bitnum);
+
+
+/**
+ * \ingroup bvec
+ * \brief Build a vector of constant false bdds.
+ *
+ * Builds a boolean vector with \a bitnum elements, each of which are the constant false BDD.
+ * 
+ * \return The boolean vector (which is already reference counted).
+ * \see bvec_true, bvec_con, bvec_var
+ */
 extern BVEC bvec_false(int bitnum);
+
+
+/**
+ * \ingroup bvec
+ * \brief Build a boolean vector representing an integer value.
+ *
+ * Builds a boolean vector that represents the value \a val using \a bitnum bits. The value will
+ * be represented with the LSB at the position 0 and the MSB at position \a bitnum - 1.
+ * 
+ * \return The boolean vector (which is already reference counted).
+ * \see bvec_true, bvec_false, bvec_var
+ */
 extern BVEC bvec_con(int bitnum, int val);
+
+
+/**
+ * \ingroup bvec
+ * \brief Build a boolean vector with bdd variables.
+ *
+ * Builds a boolean vector with the BDD variables \f$v_1, \ldots, v_n\f$ as the elements. Each
+ * variable will be the the variable numbered \a offset + \a N * \a step where \a N ranges from 0 to \a
+ * bitnum - 1.
+ * 
+ * \return The boolean vector (which is already reference counted).
+ * \see bvec_true, bvec_false, bvec_con
+ */
 extern BVEC bvec_var(int bitnum, int offset, int step);
+
+
+/**
+ * \ingroup bvec
+ * \brief Build a boolean vector from a fdd variable block.
+ *
+ * Builds a boolean vector which will include exactly the variables used to define the FDD
+ * variable block \a var. The vector will have the LSB at position zero.
+ * 
+ * \return The boolean vector (which is already reference counted).
+ * \see bvec_var
+ */
 extern BVEC bvec_varfdd(int var);
+
+
+/**
+ * \ingroup bvec
+ * \brief Build a boolean vector with the variables passed in an array.
+ *
+ * Builds a boolean vector with the BDD variables listed in the array \a var. The array must be of
+ * size \a bitnum.
+ * 
+ * \return The boolean vector (which is already reference counted).
+ * \see bvec_var
+ */
 extern BVEC bvec_varvec(int bitnum, int *var);
+
+
+/**
+ * \ingroup bvec
+ * \brief Adjust the size of a boolean vector.
+ *
+ * Build a boolean vector with \a bitnum elements copied from \a v. If the number of elements in
+ * \a v is greater than \a bitnum then the most significant bits are removed, otherwise if
+ * number is smaller then the vector is padded with constant false BDDs (zeros).
+ * 
+ * \return The new boolean vector (which is already reference counted).
+ */
 extern BVEC bvec_coerce(int bitnum, BVEC v);
+
+
+/**
+ * \ingroup bvec
+ * \brief Test a vector for constant true/false bdds.
+ *
+ * Returns non-zero if the vector \a v consists of only constant true or false BDDs. Otherwise
+ * zero is returned. This test should precede any call to ::bvec_val.
+ * 
+ * \see bvec_val, bvec_con
+ */
 extern int  bvec_isconst(BVEC e);   
+
+
+/**
+ * \ingroup bvec
+ * \brief Calculate the integer value represented by a boolean vector.
+ *
+ * Calculates the value represented by the bits in \a v assuming that the vector \a v consists of
+ * only constant true or false BDDs. The LSB is assumed to be at position zero.
+ * 
+ * \return The integer value represented by \a v.
+ * \see bvec_isconst, bvec_con
+ */
 extern int  bvec_val(BVEC e);   
+
+
+/**
+ * \ingroup bvec
+ * \brief Frees all memory used by a boolean vector.
+ *
+ * Use this function to release any unused boolean vectors. The decrease of the reference
+ * counts on the BDDs in \a v is done by ::bvec_free.
+ * 
+ */
 extern void bvec_free(BVEC v);
+
+
+/**
+ * \ingroup bvec
+ * \brief Increase reference count of a boolean vector.
+ *
+ * Use this function to increase the reference count of all BDDs in \a v. Please note that all
+ * boolean vectors returned from BuDDy are reference counted from the beginning.
+ * 
+ * \return The boolean vector \a v.
+ * \see bvec_delref
+ */
 extern BVEC bvec_addref(BVEC v);
+
+
+/**
+ * \ingroup bvec
+ * \brief Decrease the reference count of a boolean vector.
+ *
+ * Use this function to decrease the reference count of all the BDDs in \a v.
+ * 
+ * \return The boolean vector \a v.
+ * \see bvec_addref
+ */
 extern BVEC bvec_delref(BVEC v);
+
+
+/**
+ * \ingroup bvec
+ * \brief Map a function onto a boolean vector.
+ *
+ * Maps the function \a fun onto all the elements in \a a. The value returned from \a fun is stored
+ * in a new vector which is then returned. An example of a mapping function is ::bdd_not which
+ * can be used like this 
+ * \code
+ * bvec res = bvec_map1(a, bdd_not)
+ * \endcode
+ * to negate all the BDDs in \a a.
+ * 
+ * \return The new vector (which is already reference counted).
+ * \see bvec_map2, bvec_map3
+ */
 extern BVEC bvec_map1(BVEC a, BDD (*fun)(BDD));
+
+
+/**
+ * \ingroup bvec
+ * \brief Map a function onto a boolean vector.
+ *
+ * Maps the function \a fun onto all the elements in \a a and \a b. The value returned from \a fun is
+ * stored in a new vector which is then returned. An example of a mapping function is ::bdd_and
+ * which can be used like this
+ * \code
+ * bvec res = bvec_map2(a, b, bdd_and)
+ * \endcode
+ * to calculate the logical 'and' of all the BDDs in \a a and \a b.
+ * 
+ * \return The new vector (which is already reference counted).
+ * \see bvec_map1, bvec_map3
+ */
 extern BVEC bvec_map2(BVEC a, BVEC b, BDD (*fun)(BDD,BDD));
+
+
+/**
+ * \ingroup bvec
+ * \brief Map a function onto a boolean vector.
+ *
+ * Maps the function \a fun onto all the elements in \a a, \a b and \a c. The value returned from \a
+ * fun is stored in a new vector which is then returned. An example of a mapping function is
+ * ::bdd_ite which can be used like this
+ * \code
+ * bvec res = bvec_map3(a, b, c, bdd_ite)
+ * \endcode
+ * to calculate the if-then-else function for each element in \a a, \a b and \a c.
+ * 
+ * \return The new vector (which is already reference counted).
+ * \see bvec_map1, bvec_map2
+ */
 extern BVEC bvec_map3(BVEC a, BVEC b, BVEC c, BDD (*fun)(BDD,BDD,BDD));
+
+
+/**
+ * \ingroup bvec
+ * \brief Builds a boolean vector for addition.
+ *
+ * Builds a new boolean vector that represents the addition of two other vectors. Each element
+ * \f$x_i\f$ in the result will represent the function 
+ * \f[ x_i = l_i\ \mbox{xor}\ r_i\ \mbox{xor}\ c_{i-1} \f] 
+ * where the carry in \f$c_i\f$ is 
+ * \f[ c_i = (l_i\ \mbox{and}\ r_i)\ \mbox{or}\ (c_{i-1}\ \mbox{and} \ (l_i\ \mbox{or}\ r_i)) \f] 
+ * It is important for efficency that the BDD
+ * variables used in \a l and \a r are interleaved.
+ * 
+ * \return The result of the addition (which is already reference counted).
+ * \see bvec_sub, bvec_mul, bvec_shl
+ */
 extern BVEC bvec_add(BVEC left, BVEC right);
+
+
+/**
+ * \ingroup bvec
+ * \brief Builds a boolean vector for subtraction.
+ *
+ * Builds a new boolean vector that represents the subtraction of two other vectors. Each
+ * element \f$x_i\f$ in the result will represent the function 
+ * \f[ x_i = l_i\ \mbox{xor}\ r_i\ \mbox{xor}\ c_{i-1} \f] 
+ * where the carry in \f$c_i\f$ is 
+ * \f[ c_i = (l_i\ \mbox{and}\ r_i\ \mbox{and}\ c_{i-1})\ \mbox{or}\ (\mbox{not}\ l_i\ \mbox{and}\ (r_i\ \mbox{or}\ c_{i-1})) \f] 
+ * It is important for efficency that the BDD variables used in \a l and \a r are
+ * interleaved.
+ * 
+ * \return The result of the subtraction (which is already reference counted).
+ * \see bvec_add, bvec_mul, bvec_shl
+ */
 extern BVEC bvec_sub(BVEC left, BVEC right);
+
+
+/**
+ * \ingroup bvec
+ * \brief Builds a boolean vector for multiplication with a constant.
+ *
+ * Builds a boolean vector representing the multiplication of \a e and \a c.
+ * 
+ * \return The result of the multiplication (which is already reference counted).
+ * \see bvec_mul, bvec_div, bvec_add, bvec_shl
+ */
 extern BVEC bvec_mulfixed(BVEC e, int c);
+
+
+/**
+ * \ingroup bvec
+ * \brief Builds a boolean vector for multiplication.
+ *
+ * Builds a boolean vector representing the multiplication of \a l and \a r.
+ * 
+ * \return The result of the multiplication (which is already reference counted).
+ * \see bvec_mulfixed, bvec_div, bvec_add, bvec_shl
+ */
 extern BVEC bvec_mul(BVEC left, BVEC right);
+
+
+/**
+ * \ingroup bvec
+ * \brief Builds a boolean vector for division by a constant.
+ *
+ * Builds a new boolean vector representing the integer division of \a e with \a c. The result of
+ * the division will be stored in \a res and the remainder of the division will be stored in \a
+ * rem. Both vectors should be initialized as the function will try to release the nodes used by
+ * them. If an error occurs then the nodes will \em not be freed.
+ * 
+ * \return Zero on success or a negative error code on error.
+ * \see bvec_div, bvec_mul, bvec_add, bvec_shl
+ */
 extern int  bvec_divfixed(BVEC e, int c, BVEC *res, BVEC *rem);
+
+
+/**
+ * \ingroup bvec
+ * \brief Builds a boolean vector for division.
+ *
+ * Builds a new boolean vector representing the integer division of \a l with \a r. The result of
+ * the division will be stored in \a res and the remainder of the division will be stored in \a rem.
+ * Both vectors should be initialized as the function will try to release the nodes used by
+ * them. If an error occurs then the nodes will \em not be freed.
+ * 
+ * \return Zero on success or a negative error code on error.
+ * \see bvec_mul, bvec_divfixed, bvec_add, bvec_shl
+ */
 extern int  bvec_div(BVEC left, BVEC right, BVEC *res, BVEC *rem);
 extern BVEC bvec_ite(BDD a, BVEC b, BVEC c);
+
+
+/**
+ * \ingroup bvec
+ * \brief Shift left operation (fixed number of bits).
+ *
+ * Builds a boolean vector that represents \a v shifted \a pos times to the left. The new empty
+ * elements will be set to \a c.
+ * 
+ * \return The result of the operation (which is already reference counted).
+ * \see bvec_add, bvec_mul, bvec_shl, bvec_shr
+ */
 extern BVEC bvec_shlfixed(BVEC e, int pos, BDD c);
+
+
+/**
+ * \ingroup bvec
+ * \brief Shift left operation (symbolic).
+ *
+ * Builds a boolean vector that represents \a l shifted \a r times to the left. The new empty
+ * elements will be set to \a c. The shift operation is fully symbolic and the number of bits
+ * shifted depends on the current value encoded by \a r.
+ * 
+ * \return The result of the operation (which is already reference counted).
+ * \see bvec_add, bvec_mul, bvec_shlfixed, bvec_shr
+ */
 extern BVEC bvec_shl(BVEC l, BVEC r, BDD c);
+
+
+/**
+ * \ingroup bvec
+ * \brief Shift right operation.
+ *
+ * Builds a boolean vector that represents \a v shifted \a pos times to the right. The new empty
+ * elements will be set to \a c.
+ * 
+ * \return The result of the operation (which is already reference counted).
+ * \see bvec_add, bvec_mul, bvec_shr, bvec_shl
+ */
 extern BVEC bvec_shrfixed(BVEC e, int pos, BDD c);
+
+
+/**
+ * \ingroup bvec
+ * \brief Shift right operation (symbolic).
+ *
+ * Builds a boolean vector that represents \a l shifted \a r times to the right. The new empty
+ * elements will be set to \a c. The shift operation is fully symbolic and the number of bits
+ * shifted depends on the current value encoded by \a r.
+ * 
+ * \return The result of the operation (which is already reference counted).
+ * \see bvec_add, bvec_mul, bvec_shl, bvec_shrfixed
+ */
 extern BVEC bvec_shr(BVEC l, BVEC r, BDD c);
+
+
+/**
+ * \ingroup bvec
+ * \brief Calculates the truth value of \f$x < y\f$.
+ *
+ * Returns the BDD representing \a l \< r (\em not reference counted). Both vectors must have
+ * the same number of bits.
+ * 
+ * \see bvec_lte, bvec_gth, bvec_gte, bvec_equ, bvec_neq
+ */
 extern BDD  bvec_lth(BVEC left, BVEC right);
+
+
+/**
+ * \ingroup bvec
+ * \brief Calculates the truth value of \f$x \leq y\f$.
+ *
+ * Returns the BDD representing \a l \f$\leq\f$ \a r (\em not reference counted). Both vectors
+ * must have the same number of bits.
+ * 
+ * \see bvec_lth, bvec_gth, bvec_gte, bvec_equ, bvec_neq
+ */
 extern BDD  bvec_lte(BVEC left, BVEC right);
+
+
+/**
+ * \ingroup bvec
+ * \brief Calculates the truth value of \f$x > y\f$.
+ *
+ * Returns the BDD representing \a l \> r (\em not reference counted). Both vectors must have
+ * the same number of bits.
+ * 
+ * \see bvec_lth, bvec_lte, bvec_gte, bvec_equ, bvec_neq
+ */
 extern BDD  bvec_gth(BVEC left, BVEC right);
+
+
+/**
+ * \ingroup bvec
+ * \brief Calculates the truth value of \f$x \geq y \f$.
+ *
+ * Returns the BDD representing \a l \f$\geq\f$ \a r (\em not reference counted). Both vectors
+ * must have the same number of bits.
+ * 
+ * \see bvec_lth, bvec_gth, bvec_gth, bvec_equ, bvec_neq
+ */
 extern BDD  bvec_gte(BVEC left, BVEC right);
+
+
+/**
+ * \ingroup bvec
+ * \brief Calculates the truth value of \f$x = y \f$.
+ *
+ * Returns the BDD representing \a l = r (\em not reference counted). Both vectors must have
+ * the same number of bits.
+ * 
+ * \see bvec_lth, bvec_lte, bvec_gth, bvec_gte, bvec_neq
+ */
 extern BDD  bvec_equ(BVEC left, BVEC right);
+
+
+/**
+ * \ingroup bvec
+ * \brief Calculates the truth value of \f$x \neq y\f$.
+ *
+ * Returns the BDD representing \a l\f$\neq\f$\a r (\em not reference counted). Both vectors
+ * must have the same number of bits.
+ * 
+ * \see bvec_lte, bvec_lth, bvec_gth, bvec_gth, bvec_equ
+ */
 extern BDD  bvec_neq(BVEC left, BVEC right);
 
 #ifdef CPLUSPLUS

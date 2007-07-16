@@ -35,9 +35,6 @@
   DATE:  february 1997
 *************************************************************************/
 
-/** \file pairs.c
- */
- 
 #include <stdlib.h>
 #include <limits.h>
 #include "kernel.h"
@@ -135,17 +132,6 @@ int bdd_pairs_resize(int oldsize, int newsize)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Creates an empty variable pair table.
- *
- * Variable pairs of the type ::bddPair are used in ::bdd_replace to define which variables to
- * replace with other variables. This function allocates such an empty table. The table can be
- * freed by a call to ::bdd_freepair.
- * 
- * \return Returns a new table of pairs.
- * \see bdd_freepair, bdd_replace, bdd_setpair, bdd_setpairs
- */
 bddPair *bdd_newpair(void)
 {
    int n;
@@ -175,20 +161,6 @@ bddPair *bdd_newpair(void)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Set one variable pair.
- *
- * Adds the pair (\a oldvar,\a newvar) to the table of pairs \a pair. This results in \a oldvar
- * being substituted with \a newvar in a call to ::bdd_replace. In the first version \a newvar
- * is an integer representing the variable to be replaced with the old variable. In the second
- * version \a oldvar is a BDD. In this case the variable \a oldvar is substituted with the BDD \a
- * newvar. The possibility to substitute with any BDD as \a newvar is utilized in ::bdd_compose,
- * whereas only the topmost variable in the BDD is used in ::bdd_replace.
- * 
- * \return Zero on success, otherwise a negative error code.
- * \see bdd_newpair, bdd_setpairs, bdd_resetpair, bdd_replace, bdd_compose
- */
 int bdd_setpair(bddPair *pair, int oldvar, int newvar)
 {
    if (pair == NULL)
@@ -233,16 +205,6 @@ int bdd_setbddpair(bddPair *pair, int oldvar, BDD newvar)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Defines a whole set of pairs.
- *
- * As for ::bdd_setpair but with \a oldvar and \a newvar being arrays of variables (BDDs) of
- * size \a size.
- * 
- * \return Zero on success, otherwise a negative error code.
- * \see bdd_newpair, bdd_setpair, bdd_replace, bdd_compose
- */
 int bdd_setpairs(bddPair *pair, int *oldvar, int *newvar, int size)
 {
    int n,e;
@@ -271,14 +233,6 @@ int bdd_setbddpairs(bddPair *pair, int *oldvar, BDD *newvar, int size)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Frees a table of pairs.
- *
- * Frees the table of pairs \a p that has been allocated by a call to ::bdd_newpair.
- * 
- * \see bdd_replace, bdd_newpair, bdd_setpair, bdd_resetpair
- */
 void bdd_freepair(bddPair *p)
 {
    int n;
@@ -305,15 +259,6 @@ void bdd_freepair(bddPair *p)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Clear all variable pairs.
- *
- * Resets the table of pairs \a p by setting all substitutions to their default values (that
- * is no change).
- * 
- * \see bdd_newpair, bdd_setpair, bdd_freepair
- */
 void bdd_resetpair(bddPair *p)
 {
    int n;

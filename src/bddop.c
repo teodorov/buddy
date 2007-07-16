@@ -35,9 +35,6 @@
   DATE:  (C) nov 1997
 *************************************************************************/
 
-/** \file bddop.c
- */
-
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -271,20 +268,6 @@ static void bdd_operator_noderesize(void)
   Other
 *************************************************************************/
 
-/**
- * \ingroup kernel
- * \brief Sets the cache ratio for the operator caches.
- *
- * The ratio between the number of nodes in the nodetable and the number of entries in the
- * operator cachetables is called the cache ratio. So a cache ratio of say, four, allocates one
- * cache entry for each four unique node entries. This value can be set with
- * ::bdd_setcacheratio to any positive value. When this is done the caches are resized
- * instantly to fit the new ratio. The default is a fixed cache size determined at
- * initialization time.
- * 
- * \return The previous cache ratio or a negative number on error.
- * \see bdd_init
- */
 int bdd_setcacheratio(int r)
 {
    int old = cacheratio;
@@ -314,23 +297,6 @@ static void checkresize(void)
 
 /*=== BUILD A CUBE =====================================================*/
 
-/**
- * \ingroup operator
- * \brief Build a cube from an array of variables specified by a BDD array.
- *
- * This function builds a cube from the variables in \a var. It does so by interpreting the \a
- * width low order bits of \a value as a bit mask - a set bit indicates that the variable should be
- * added in it's positive form, and a cleared bit the opposite. The most significant bits are
- * encoded with the first variables in \a variables. Consider as an example the call
- * \code
- * bdd_buildcube(0xB, 4, var);
- * \endcode
- * This corresponds to the expression: \f$var[0] \land \lnot var[1] \land var[2] \land var[3]\f$. 
- * This version of the function takes an array of BDDs as \a variables.
- * 
- * \return The resulting cube.
- * \see bdd_ithvar, fdd_ithvar
- */
 BDD bdd_buildcube(int value, int width, BDD *variables)
 {
    BDD result = BDDONE;
@@ -357,23 +323,6 @@ BDD bdd_buildcube(int value, int width, BDD *variables)
    return result;
 }
 
-/**
- * \ingroup operator
- * \brief Build a cube from an array of variables.
- *
- * This function builds a cube from the variables in \a var. It does so by interpreting the \a
- * width low order bits of \a value as a bit mask - a set bit indicates that the variable should be
- * added in it's positive form, and a cleared bit the opposite. The most significant bits are
- * encoded with the first variables in \a variables. Consider as an example the call
- * \code
- * bdd_buildcube(0xB, 4, var);
- * \endcode
- * This corresponds to the expression: \f$var[0] \land \lnot var[1] \land var[2] \land var[3]\f$. 
- * This version of the function takes an array of variable numbers as used in ::bdd_ithvar.
- * 
- * \return The resulting cube.
- * \see bdd_ithvar, fdd_ithvar
- */
 
 BDD bdd_ibuildcube(int value, int width, int *variables)
 {
@@ -403,15 +352,6 @@ BDD bdd_ibuildcube(int value, int width, int *variables)
 
 /*=== NOT ==============================================================*/
 
-/**
- * \ingroup operator
- * \brief Negates a bdd.
- *
- * Negates the BDD \a r by exchanging all references to the zero-terminal with references to
- * the one-terminal and vice versa.
- * 
- * \return The negated bdd.
- */
 BDD bdd_not(BDD r)
 {
    BDD res;
@@ -480,30 +420,6 @@ static BDD not_rec(BDD r)
 
 /*=== APPLY ============================================================*/
 
-/**
- * \ingroup operator
- * \brief Basic bdd operations.
- *
- * The ::bdd_apply function performs all of the basic bdd operations with two operands, such
- * as AND, OR etc. The \a l argument is the left bdd operand and \a r is the right operand.
- * The \a op argument is the requested operation and must be one of the following
- * <TABLE>
- * <TR> <TD>Identifier</TD>     <TD>Description</TD>                    <TD>Truth table</TD> <TD>C++ opr</TD> </TR>
-   <TR> <TD>::bddop_and</TD>    <TD>logical and (\f$A \wedge B\f$)</TD> <TD>[0,0,0,1]</TD> <TD>\&</TD> </TR> 
-   <TR> <TD>::bddop_xor</TD>    <TD>logical xor (\f$A \oplus B\f$)</TD> <TD>[0,1,1,0]</TD> <TD>\^</TD> </TR> 
-   <TR> <TD>::bddop_or</TD>     <TD>logical or (\f$A \vee B\f$)</TD>    <TD>[0,1,1,1]</TD> <TD>|</TD> </TR> 
-   <TR> <TD>::bddop_nand</TD>   <TD>logical not-and</TD>                <TD>[1,1,1,0] </TR>
-   <TR> <TD>::bddop_nor</TD>    <TD>logical not-or</TD>                 <TD>[1,0,0,0] </TR> 
-   <TR> <TD>::bddop_imp</TD>    <TD>implication (\f$A \Rightarrow B\f$)</TD> <TD>[1,1,0,1]</TD> <TD>\>\></TD> </TR> 
-   <TR> <TD>::bddop_biimp</TD>  <TD>bi-implication (\f$A \Leftrightarrow B\f$)</TD> <TD>[1,0,0,1]</TD> </TR>
-   <TR> <TD>::bddop_diff</TD>   <TD>set difference (\f$A \setminus B\f$)</TD> <TD>[0,0,1,0]</TD> <TD>-</TD> </TR> 
-   <TR> <TD>::bddop_less</TD>   <TD>less than (\f$A < B\f$)</TD>        <TD>[0,1,0,0]</TD> <TD>\<</TD> </TR> 
-   <TR> <TD>::bddop_invimp</TD> <TD>reverse implication (\f$A \Leftarrow B\f$)</TD> <TD>[1,0,1,1]</TD> <TD>\<\<</TD> </TR> 
-   </TABLE>
- * 
- * \return The result of the operation.
- * \see bdd_ite
- */
 BDD bdd_apply(BDD l, BDD r, int op)
 {
    BDD res;
@@ -646,76 +562,30 @@ static BDD apply_rec(BDD l, BDD r)
 }
 
 
-/**
- * \ingroup operator
- * \brief The logical 'and' of two bdds.
- *
- * This a wrapper that calls 
- * \code bdd_apply(l,r,bddop_and) \endcode
- * 
- * \return The logical 'and' of \a l and \a r.
- * \see bdd_apply, bdd_or, bdd_xor
- */
 BDD bdd_and(BDD l, BDD r)
 {
    return bdd_apply(l,r,bddop_and);
 }
 
 
-/**
- * \ingroup operator
- * \brief The logical 'or' of two bdds.
- *
- * This a wrapper that calls \code bdd_apply(l,r,bddop_or) \endcode
- * 
- * \return The logical 'or' of \a l and \a r.
- * \see bdd_apply, bdd_xor, bdd_and
- */
 BDD bdd_or(BDD l, BDD r)
 {
    return bdd_apply(l,r,bddop_or);
 }
 
 
-/**
- * \ingroup operator
- * \brief The logical 'xor' of two bdds.
- *
- * This a wrapper that calls \code bdd_apply(l,r,bddop_xor) \endcode
- * 
- * \return The logical 'xor' of \a l and \a r.
- * \see bdd_apply, bdd_or, bdd_and
- */
 BDD bdd_xor(BDD l, BDD r)
 {
    return bdd_apply(l,r,bddop_xor);
 }
 
 
-/**
- * \ingroup operator
- * \brief The logical 'implication' between two bdds.
- *
- * This a wrapper that calls \code bdd_apply(l,r,bddop_imp) \endcode
- * 
- * \return The logical 'implication' of \a l and \a r (\f$l \Rightarrow r\f$).
- * \see bdd_apply, bdd_biimp
- */
 BDD bdd_imp(BDD l, BDD r)
 {
    return bdd_apply(l,r,bddop_imp);
 }
 
 
-/**
- * \ingroup operator
- * \brief The logical 'bi-implication' between two bdds.
- *
- * This a wrapper that calls \code bdd_apply(l,r,bddop_biimp) \endcode
- * 
- * \return The logical 'bi-implication' of \a l and \a r (\f$l \Leftrightarrow r\f$).
- * \see bdd_apply, bdd_imp
- */
 BDD bdd_biimp(BDD l, BDD r)
 {
    return bdd_apply(l,r,bddop_biimp);
@@ -724,18 +594,6 @@ BDD bdd_biimp(BDD l, BDD r)
 
 /*=== ITE ==============================================================*/
 
-/**
- * \ingroup operator
- * \brief If-then-else operator.
- *
- * Calculates the BDD for the expression \f$(f \land g) \lor (\lnot f \land h)\f$ more efficiently
- * than doing the three operations separately. ::bdd_ite can also be used for conjunction,
- * disjunction and any other boolean operator, but is not as efficient for the binary and unary
- * operations.
- * 
- * \return The BDD for \f$(f \land g) \lor (\lnot f \land h)\f$.
- * \see bdd_apply
- */
 BDD bdd_ite(BDD f, BDD g, BDD h)
 {
    BDD res;
@@ -879,27 +737,6 @@ static BDD ite_rec(BDD f, BDD g, BDD h)
 
 /*=== RESTRICT =========================================================*/
 
-/**
- * \ingroup operator
- * \brief Restric a set of variables to constant values.
- *
- * This function restricts the variables in \a r to constant true or false. How this is done
- * depends on how the variables are included in the variable set \a var. If they are included in
- * their positive form then they are restricted to true and vice versa. Unfortunately it is not
- * possible to insert variables in their negated form using ::bdd_makeset, so the variable
- * set has to be build manually as a conjunction of the variables. Example: Assume variable 1
- * should be restricted to true and variable 3 to false. 
- * \code
- * bdd X = make_user_bdd(); 
- * bdd R1 = bdd_ithvar(1); 
- * bdd R2 = bdd_nithvar(3); 
- * bdd R = bdd_addref(bdd_apply(R1,R2, bddop_and) ); 
- * bdd RES = bdd_addref( bdd_restrict(X,R) );
- * \endcode
- * 
- * \return The restricted bdd.
- * \see bdd_makeset, bdd_exist, bdd_forall
- */
 BDD bdd_restrict(BDD r, BDD var)
 {
    BDD res;
@@ -985,15 +822,6 @@ static int restrict_rec(int r)
 
 /*=== GENERALIZED COFACTOR =============================================*/
 
-/**
- * \ingroup operator
- * \brief Generalized cofactor.
- *
- * Computes the generalized cofactor of \a f with respect to \a c.
- * 
- * \return The constrained BDD.
- * \see bdd_restrict, bdd_simplify
- */
 BDD bdd_constrain(BDD f, BDD c)
 {
    BDD res;
@@ -1102,17 +930,6 @@ static BDD constrain_rec(BDD f, BDD c)
 
 /*=== REPLACE ==========================================================*/
 
-/**
- * \ingroup operator
- * \brief Replaces variables with other variables.
- *
- * Replaces all variables in the BDD \a r with the variables defined by \a pair. Each entry in \a pair 
- * consists of an old and a new variable. Whenever the old variable is found in \a r then a new
- * node with the new variable is inserted instead.
- * 
- * \see bdd_newpair, bdd_setpair, bdd_setpairs
- * \return The result of the operation.
- */
 BDD bdd_replace(BDD r, bddPair *pair)
 {
    BDD res;
@@ -1222,15 +1039,6 @@ static BDD bdd_correctify(int level, BDD l, BDD r)
 
 /*=== COMPOSE ==========================================================*/
 
-/**
- * \ingroup operator
- * \brief Functional composition.
- *
- * Substitutes the variable \a var with the BDD \a g in the BDD \a f: result \f$= f[g/var]\f$.
- * 
- * \return The composed BDD.
- * \see bdd_veccompose, bdd_replace, bdd_restrict
- */
 BDD bdd_compose(BDD f, BDD g, int var)
 {
    BDD res;
@@ -1329,22 +1137,6 @@ static BDD compose_rec(BDD f, BDD g)
 }
 
 
-/**
- * \ingroup operator
- * \brief Simultaneous functional composition.
- *
- * Uses the pairs of variables and BDDs in \a pair to make the simultaneous substitution:
- * \f$[g_1/V_1, \ldots, g_n/V_n]\f$. 
- * In this way one or more BDDs may be substituted in one step.
- * The BDDs in \a pair may depend on the variables they are substituting. ::bdd_compose may be
- * used instead of ::bdd_replace but is not as efficient when \f$g_i\f$ is a single variable, the
- * same applies to ::bdd_restrict. Note that simultaneous substitution is not necessarily
- * the same as repeated substitution. Example: \f[(x_1 \lor x_2)[x_3/x_1,x_4/x_3] = (x_3
- * \lor x_2) \neq ((x_1 \lor x_2)[x_3/x_1])[x_4/x_3] = (x_4 \lor x_2)\f]
- * 
- * \return The composed BDD.
- * \see bdd_compose, bdd_replace, bdd_restrict
- */
 BDD bdd_veccompose(BDD f, bddPair *pair)
 {
    BDD res;
@@ -1415,17 +1207,6 @@ static BDD veccompose_rec(BDD f)
 
 /*=== SIMPLIFY =========================================================*/
 
-/**
- * \ingroup operator
- * \brief Coudert and madre's restrict function.
- *
- * Tries to simplify the BDD \a f by restricting it to the domain covered by \a d. No checks are
- * done to see if the result is actually smaller than the input. This can be done by the user with a
- * call to ::bdd_nodecount.
- * 
- * \see bdd_restrict
- * \return The simplified BDD.
- */
 BDD bdd_simplify(BDD f, BDD d)
 {
    BDD res;
@@ -1526,15 +1307,6 @@ static BDD simplify_rec(BDD f, BDD d)
 
 /*=== QUANTIFICATION ===================================================*/
 
-/**
- * \ingroup operator
- * \brief Existential quantification of variables.
- *
- * Removes all occurences in \a r of variables in the set \a var by existential quantification.
- * 
- * \see bdd_forall, bdd_unique, bdd_makeset
- * \return The quantified BDD.
- */
 BDD bdd_exist(BDD r, BDD var)
 {
    BDD res;
@@ -1576,15 +1348,6 @@ BDD bdd_exist(BDD r, BDD var)
 }
 
 
-/**
- * \ingroup operator
- * \brief Universal quantification of variables.
- *
- * Removes all occurences in \a r of variables in the set \a var by universal quantification.
- * 
- * \see bdd_exist, bdd_unique, bdd_makeset
- * \return The quantified BDD.
- */
 BDD bdd_forall(BDD r, BDD var)
 {
    BDD res;
@@ -1626,17 +1389,6 @@ BDD bdd_forall(BDD r, BDD var)
 }
 
 
-/**
- * \ingroup operator
- * \brief Unique quantification of variables.
- *
- * Removes all occurences in \a r of variables in the set \a var by unique quantification. This
- * type of quantification uses a XOR operator instead of an OR operator as in the existential
- * quantification, and an AND operator as in the universal quantification.
- * 
- * \see bdd_exist, bdd_forall, bdd_makeset
- * \return The quantified BDD.
- */
 BDD bdd_unique(BDD r, BDD var)
 {
    BDD res;
@@ -1718,20 +1470,6 @@ static int quant_rec(int r)
 
 /*=== APPLY & QUANTIFY =================================================*/
 
-/**
- * \ingroup operator
- * \brief Apply operation and existential quantification.
- *
- * Applies the binary operator \a opr to the arguments \a l and \a r and then performs an
- * existential quantification of the variables from the variable set \a var. This is done in a
- * bottom up manner such that both the apply and quantification is done on the lower nodes
- * before stepping up to the higher nodes. This makes the ::bdd_appex function much more
- * efficient than an apply operation followed by a quantification. If the operator is a
- * conjunction then this is similar to the relational product of the two BDDs.
- * 
- * \see bdd_appall, bdd_appuni, bdd_apply, bdd_exist, bdd_forall, bdd_unique, bdd_makeset
- * \return The result of the operation.
- */
 BDD bdd_appex(BDD l, BDD r, int opr, BDD var)
 {
    BDD res;
@@ -1782,19 +1520,6 @@ BDD bdd_appex(BDD l, BDD r, int opr, BDD var)
 }
 
 
-/**
- * \ingroup operator
- * \brief Apply operation and universal quantification.
- *
- * Applies the binary operator \a opr to the arguments \a l and \a r and then performs an
- * universal quantification of the variables from the variable set \a var. This is done in a
- * bottom up manner such that both the apply and quantification is done on the lower nodes
- * before stepping up to the higher nodes. This makes the ::bdd_appall function much more
- * efficient than an apply operation followed by a quantification.
- * 
- * \see bdd_appex, bdd_appuni, bdd_apply, bdd_exist, bdd_forall, bdd_unique, bdd_makeset
- * \return The result of the operation.
- */
 BDD bdd_appall(BDD l, BDD r, int opr, BDD var)
 {
    BDD res;
@@ -1845,19 +1570,6 @@ BDD bdd_appall(BDD l, BDD r, int opr, BDD var)
 }
 
 
-/**
- * \ingroup operator
- * \brief Apply operation and unique quantification.
- *
- * Applies the binary operator \a opr to the arguments \a l and \a r and then performs a
- * unique quantification of the variables from the variable set \a var. This is done in a bottom
- * up manner such that both the apply and quantification is done on the lower nodes before
- * stepping up to the higher nodes. This makes the ::bdd_appuni function much more efficient
- * than an apply operation followed by a quantification.
- * 
- * \see bdd_appex, bdd_appall, bdd_apply, bdd_exist, bdd_unique, bdd_forall, bdd_makeset
- * \return The result of the operation.
- */
 BDD bdd_appuni(BDD l, BDD r, int opr, BDD var)
 {
    BDD res;
@@ -2024,15 +1736,6 @@ static int appquant_rec(int l, int r)
 
 /*=== SUPPORT ==========================================================*/
 
-/**
- * \ingroup info
- * \brief Returns the variable support of a bdd.
- *
- * Finds all the variables that \a r depends on. That is the support of \a r.
- * 
- * \see bdd_makeset
- * \return A BDD variable set.
- */
 BDD bdd_support(BDD r)
 {
    static int  supportSize = 0;
@@ -2122,16 +1825,6 @@ static void support_rec(int r, int* support)
 
 /*=== ONE SATISFYING VARIABLE ASSIGNMENT ===============================*/
 
-/**
- * \ingroup operator
- * \brief Finds one satisfying variable assignment.
- *
- * Finds a BDD with at most one variable at each level. This BDD implies \a r and is not false
- * unless \a r is false.
- * 
- * \see bdd_allsat bdd_satoneset, bdd_fullsatone, bdd_satcount, bdd_satcountln
- * \return The result of the operation.
- */
 BDD bdd_satone(BDD r)
 {
    BDD res;
@@ -2170,18 +1863,6 @@ static BDD satone_rec(BDD r)
 }
 
 
-/**
- * \ingroup operator
- * \brief Finds one satisfying variable assignment.
- *
- * Finds a minterm in \a r. The \a var argument is a variable set that defines a set of variables
- * that \em must be mentioned in the result. The polarity of these variables in result --- in
- * case they are undefined in \a r --- are defined by the \a pol parameter. If \a pol is the false
- * BDD then the variables will be in negative form, and otherwise they will be in positive form.
- * 
- * \see bdd_allsat bdd_satone, bdd_fullsatone, bdd_satcount, bdd_satcountln
- * \return The result of the operation.
- */
 BDD bdd_satoneset(BDD r, BDD var, BDD pol)
 {
    BDD res;
@@ -2253,16 +1934,6 @@ static BDD satoneset_rec(BDD r, BDD var)
 
 /*=== EXACTLY ONE SATISFYING VARIABLE ASSIGNMENT =======================*/
 
-/**
- * \ingroup operator
- * \brief Finds one satisfying variable assignment.
- *
- * Finds a BDD with exactly one variable at all levels. This BDD implies \a r and is not false
- * unless \a r is false.
- * 
- * \see bdd_allsat bdd_satone, bdd_satoneset, bdd_satcount, bdd_satcountln
- * \return The result of the operation.
- */
 BDD bdd_fullsatone(BDD r)
 {
    BDD res;
@@ -2323,32 +1994,6 @@ static int fullsatone_rec(int r)
 
 /*=== ALL SATISFYING VARIABLE ASSIGNMENTS ==============================*/
 
-/**
- * \ingroup operator
- * \brief Finds all satisfying variable assignments.
- *
- * Iterates through all legal variable assignments (those that make the BDD come true) for the
- * bdd \a r and calls the callback handler \a handler for each of them. The array passed to \a
- * handler contains one entry for each of the globally defined variables. Each entry is either
- * 0 if the variable is false, 1 if it is true, and -1 if it is a don't care. The following is an
- * example of a callback handler that prints 'X' for don't cares, '0' for zero, and '1' for one:
- * \code
- * void allsatPrintHandler(char* varset, int size) 
- * { 
- *   for (int v=0; v<size; ++v) 
- *   { 
- *      cout << (varset[v] < 0 ? 'X' : (char)('0' + varset[v])); 
- *   } 
- *   cout << endl; 
- * }
- * \endcode
- * The handler can be used like this:
- * \code
- * bdd_allsat(r, * allsatPrintHandler);
- * \endcode
- * 
- * \see bdd_satone bdd_satoneset, bdd_fullsatone, bdd_satcount, bdd_satcountln
- */
 void bdd_allsat(BDD r, bddallsathandler handler)
 {
    int v;
@@ -2416,18 +2061,6 @@ static void allsat_rec(BDD r)
 
 /*=== COUNT NUMBER OF SATISFYING ASSIGNMENT ============================*/
 
-/**
- * \ingroup info
- * \brief Calculates the number of satisfying variable assignments.
- *
- * Calculates how many possible variable assignments there exists such that \a r is satisfied
- * (true). All defined variables are considered in the first version. In the second version,
- * only the variables in the variable set \a varset are considered. This makes the function a
- * \em lot slower.
- * 
- * \see bdd_satone, bdd_fullsatone, bdd_satcountln
- * \return The number of possible assignments.
- */
 double bdd_satcount(BDD r)
 {
    double size=1;
@@ -2490,18 +2123,6 @@ static double satcount_rec(int root)
 }
 
 
-/**
- * \ingroup info
- * \brief Calculates the logarith of the number of satisfying variable assignments.
- *
- * Calculates how many possible variable assignments there exists such that \a r is satisfied
- * (true) and returns the logarithm of this. The result is calculated in such a manner that it is
- * practically impossible to get an overflow, which is very possible for ::bdd_satcount if
- * the number of defined variables is too large. 
- * 
- * \see bdd_satone, bdd_fullsatone, bdd_satcount
- * \return The logarithm of the number of possible assignments.
- */
 double bdd_satcountln(BDD r)
 {
    double size;
@@ -2518,19 +2139,6 @@ double bdd_satcountln(BDD r)
 }
 
 
-/**
- * \ingroup info
- * \brief Calculates the logarith of the number of satisfying variable assignments.
- *
- * Calculates how many possible variable assignments there exists such that \a r is satisfied
- * (true) and returns the logarithm of this. The result is calculated in such a manner that it is
- * practically impossible to get an overflow, which is very possible for ::bdd_satcount if
- * the number of defined variables is too large. In this version only the variables in the 
- * variable set \a varset are considered. This makes the function a \em lot slower!.
- * 
- * \see bdd_satone, bdd_fullsatone, bdd_satcount
- * \return The logarithm of the number of possible assignments.
- */
  double bdd_satcountlnset(BDD r, BDD varset)
 {
    double unused = bddvarnum;
@@ -2592,15 +2200,6 @@ static double satcountln_rec(int root)
 
 /*=== COUNT NUMBER OF ALLOCATED NODES ==================================*/
 
-/**
- * \ingroup info
- * \brief Counts the number of nodes used for a bdd.
- *
- * Traverses the BDD and counts all distinct nodes that are used for the BDD.
- * 
- * \return The number of nodes.
- * \see bdd_pathcount, bdd_satcount, bdd_anodecount
- */
 int bdd_nodecount(BDD r)
 {
    int num=0;
@@ -2614,17 +2213,6 @@ int bdd_nodecount(BDD r)
 }
 
 
-/**
- * \ingroup info
- * \brief Counts the number of shared nodes in an array of bdds.
- *
- * Traverses all of the BDDs in \a r and counts all distinct nodes that are used in the BDDs -- if a
- * node is used in more than one BDD then it only counts once. The \a num parameter holds the size
- * of the array.
- * 
- * \return The number of nodes.
- * \see bdd_nodecount
- */
 int bdd_anodecount(BDD *r, int num)
 {
    int n;
@@ -2642,17 +2230,6 @@ int bdd_anodecount(BDD *r, int num)
 
 /*=== NODE PROFILE =====================================================*/
 
-/**
- * \ingroup info
- * \brief Returns a variable profile.
- *
- * Counts the number of times each variable occurs in the bdd \a r. The result is stored and
- * returned in an integer array where the i'th position stores the number of times the i'th
- * variable occured in the BDD. It is the users responsibility to free the array again using a
- * call to \c free.
- * 
- * \return A pointer to an integer array with the profile or \c NULL if an error occured.
- */
 int *bdd_varprofile(BDD r)
 {
    CHECKa(r, NULL);
@@ -2691,15 +2268,6 @@ static void varprofile_rec(int r)
 
 /*=== COUNT NUMBER OF PATHS ============================================*/
 
-/**
- * \ingroup info
- * \brief Count the number of paths leading to the true terminal.
- *
- * Counts the number of paths from the root node \a r leading to the terminal true node.
- * 
- * \return The number of paths.
- * \see bdd_nodecount, bdd_satcount
- */
 double bdd_pathcount(BDD r)
 {
    CHECKa(r, 0.0);

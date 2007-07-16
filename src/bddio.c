@@ -34,8 +34,7 @@
   AUTH:  Jorn Lind
   DATE:  (C) june 1997
 *************************************************************************/
-/** \file bddio.c
- */
+
 
 #include <string.h>
 #include <stdlib.h>
@@ -69,33 +68,6 @@ static int      *loadvar2level;
 /*=== PRINTING ========================================================*/
 
 
-/**
- * \ingroup kernel
- * \brief Specifies a printing callback handler.
- *
- * A printing callback handler for use with BDDs is used to convert the BDD variable number into
- * something readable by the end user. Typically the handler will print a string name instead
- * of the number. A handler could look like this: 
- * 
- * \code
- * void printhandler(FILE **o, int var) 
- * { 
- *   extern char **names; fprintf(o, "%s", names[var]); 
- * } 
- * \endcode
- * 
- * The handler can then be passed to BuDDy like this:
- * 
- * \code
- * bdd_file_hook(printhandler);
- * \endcode
- * 
- * No default handler is supplied. The argument \a handler
- * may be \c NULL if no handler is needed.
- * 
- * \return The old handler.
- * \see bdd_printset, bdd_strm_hook, fdd_file_hook
- */
 bddfilehandler bdd_file_hook(bddfilehandler handler)
 {
    bddfilehandler old = filehandler;
@@ -104,35 +76,12 @@ bddfilehandler bdd_file_hook(bddfilehandler handler)
 }
 
 
-/**
- * \ingroup fileio
- * \brief Prints all used entries in the node table to \c stdout.
- *
- * Prints to \c stdout all the used entries in the main node table. The
- * format is: 
- * \verbatim [Nodenum] Var/Level Low High \endverbatim
- * Where \c Nodenum is the position in the node table and \c Level is the position in the current 
- * variable order.
- * 
- * \see bdd_printtable, bdd_printset, bdd_printdot
- */
 void bdd_printall(void)
 {
    bdd_fprintall(stdout);
 }
 
-/**
- * \ingroup fileio
- * \brief Prints all used entries in the node table to a file.
- *
- * Prints to the file \a ofile all the used entries in the main node table. The
- * format is: 
- * \verbatim [Nodenum] Var/Level Low High \endverbatim
- * Where \c Nodenum is the position in the node table and \c Level is the position in the current 
- * variable order.
- * 
- * \see bdd_printtable, bdd_printset, bdd_printdot
- */
+
 void bdd_fprintall(FILE *ofile)
 {
    int n;
@@ -155,35 +104,12 @@ void bdd_fprintall(FILE *ofile)
 }
 
 
-/**
- * \ingroup fileio
- * \brief Prints the node table entries used by a bdd to \c stdout.
- *
- * Prints to \c stdout all the entries in the main node table used by \a r.
- * The format is: 
- * \verbatim [Nodenum] Var/Level : Low High \endverbatim
- * Where \c Nodenum is the position in the node table and Level is the position
- * in the current variable order.
- * 
- * \see bdd_printall, bdd_printset, bdd_printdot
- */
 void bdd_printtable(BDD r)
 {
    bdd_fprinttable(stdout, r);
 }
 
-/**
- * \ingroup fileio
- * \brief Prints the node table entries used by a bdd to a file.
- *
- * Prints to the file \a ofile all the entries in the main node table used by \a r.
- * The format is: 
- * \verbatim [Nodenum] Var/Level : Low High \endverbatim
- * Where \c Nodenum is the position in the node table and Level is the position
- * in the current variable order.
- * 
- * \see bdd_printall, bdd_printset, bdd_printdot
- */
+
 void bdd_fprinttable(FILE *ofile, BDD r)
 {
    BddNode *node;
@@ -217,50 +143,12 @@ void bdd_fprinttable(FILE *ofile, BDD r)
 }
 
 
-/**
- * \ingroup fileio
- * \brief Prints the set of truth assignments specified by a bdd to \c stdout.
- *
- * Prints all the truth assignments for \a r that would yield it true to \c stdout. The format is:
- * \f{eqnarray*}
- * \langle x_{1,1}:c_{1,1},\ldots,x_{1,n_1}:c_{1,n_1} \rangle \\
- * \langle x_{2,1}:c_{2,1},\ldots,x_{2,n_2}:c_{2,n_2} \rangle \\ 
- * \vdots \\
- * \langle x_{N,1}:c_{N,1},\ldots,x_{N,n_3}:c_{N,n_3} \rangle
- * \f}
- * Where the \f$x\f$'s are variable numbers (and the position in the current order) 
- * and the \f$c\f$'s are the possible assignments to these. Each set of brackets designates one 
- * possible assignment to the set of variables that make up the BDD. All variables not shown 
- * are don't cares. It is possible to specify a callback handler for printing of the variables 
- * using ::bdd_file_hook or ::bdd_strm_hook.
- * 
- * \see bdd_printall, bdd_printtable, bdd_printdot, bdd_file_hook, bdd_strm_hook
- */
 void bdd_printset(BDD r)
 {
    bdd_fprintset(stdout, r);
 }
 
 
-/**
- * \ingroup fileio
- * \brief Prints the set of truth assignments specified by a bdd to a file.
- *
- * Prints all the truth assignments for \a r that would yield it true to \a ofile. The format is:
- * \f{eqnarray*}
- * \langle x_{1,1}:c_{1,1},\ldots,x_{1,n_1}:c_{1,n_1} \rangle \\
- * \langle x_{2,1}:c_{2,1},\ldots,x_{2,n_2}:c_{2,n_2} \rangle \\ 
- * \vdots \\
- * \langle x_{N,1}:c_{N,1},\ldots,x_{N,n_3}:c_{N,n_3} \rangle
- * \f}
- * Where the \f$x\f$'s are variable numbers (and the position in the current order) 
- * and the \f$c\f$'s are the possible assignments to these. Each set of brackets designates one 
- * possible assignment to the set of variables that make up the BDD. All variables not shown 
- * are don't cares. It is possible to specify a callback handler for printing of the variables 
- * using ::bdd_file_hook or ::bdd_strm_hook.
- * 
- * \see bdd_printall, bdd_printtable, bdd_printdot, bdd_file_hook, bdd_strm_hook
- */
 void bdd_fprintset(FILE *ofile, BDD r)
 {
    int *set;
@@ -326,30 +214,12 @@ static void bdd_printset_rec(FILE *ofile, int r, int *set)
 }
 
 
-/**
- * \ingroup fileio
- * \brief Prints a description of a bdd in dot format to \c stdout.
- *
- * Prints a BDD in a format suitable for use with the graph drawing program DOT to \c stdout.
- * 
- * \see bdd_printall, bdd_printtable, bdd_printset
- */
 void bdd_printdot(BDD r)
 {
    bdd_fprintdot(stdout, r);
 }
 
 
-/**
- * \ingroup fileio
- * \brief Prints a description of a bdd in dot format to a filename.
- *
- * Prints a BDD in a format suitable for use with the graph drawing program DOT to 
- * the file named by \a fname. The file will be
- * opened for writing, any previous contents destroyed and then closed again.
- * 
- * \see bdd_printall, bdd_printtable, bdd_printset
- */
 int bdd_fnprintdot(char *fname, BDD r)
 {
    FILE *ofile = fopen(fname, "w");
@@ -361,15 +231,6 @@ int bdd_fnprintdot(char *fname, BDD r)
 }
 
 
-/**
- * \ingroup fileio
- * \brief Prints a description of a bdd in dot format to a file.
- *
- * Prints a BDD in a format suitable for use with the graph drawing program DOT to 
- * a designated file \a ofile.
- * 
- * \see bdd_printall, bdd_printtable, bdd_printset
- */
 void bdd_fprintdot(FILE* ofile, BDD r)
 {
    fprintf(ofile, "digraph G {\n");
@@ -408,15 +269,6 @@ static void bdd_fprintdot_rec(FILE* ofile, BDD r)
 
 /*=== SAVE =============================================================*/
 
-/**
- * \ingroup fileio
- * \brief Saves a bdd to a file.
- *
- * Saves the nodes used by \a r to the file \a ofile which must be opened for writing.
- * 
- * \see bdd_load
- * \return Zero on success, otherwise an error code from ::bdd.h.
- */
 int bdd_fnsave(char *fname, BDD r)
 {
    FILE *ofile;
@@ -431,16 +283,6 @@ int bdd_fnsave(char *fname, BDD r)
 }
 
 
-/**
- * \ingroup fileio
- * \brief Saves a bdd to a filename.
- *
- * Saves the nodes used by \a r to the
- * file named \a fname. In the last case the file will be truncated and opened for writing.
- * 
- * \see bdd_load
- * \return Zero on success, otherwise an error code from ::bdd.h.
- */
 int bdd_save(FILE *ofile, BDD r)
 {
    int err, n=0;
@@ -493,24 +335,6 @@ static int bdd_save_rec(FILE *ofile, int root)
 
 /*=== LOAD =============================================================*/
 
-/**
- * \ingroup fileio
- * \brief Loads a bdd from a filename.
- *
- * Loads a BDD from a file into the BDD pointed to by \a r. The file is specified by the filename
- * \a fname which will be opened
- * automatically for reading. The input file format consists of integers arranged in the
- * following manner. First the number of nodes \f$N\f$ used by the BDD and then the number of
- * variables \f$V\f$ allocated and the variable ordering in use at the time the BDD was saved. If \f$N\f$
- * and \f$V\f$ are both zero then the BDD is either the constant true or false BDD, indicated by a 1
- * or a 0 as the next integer. In any other case the next \f$N\f$ sets of 4 integers will describe
- * the nodes used by the BDD. Each set consists of first the node number, then the variable
- * number and then the low and high nodes. The nodes \a must be saved in a order such that any
- * low or high node must be defined before it is mentioned.
- * 
- * \see bdd_save
- * \return Zero on success, otherwise an error code from ::bdd.h.
- */
 int bdd_fnload(char *fname, BDD *root)
 {
    FILE *ifile;
@@ -525,23 +349,6 @@ int bdd_fnload(char *fname, BDD *root)
 }
 
 
-/**
- * \ingroup fileio
- * \brief Loads a bdd from a file.
- *
- * Loads a BDD from a file into the BDD pointed to by \a r. The file \a ifile
- * which must be opened for reading. The input file format consists of integers arranged in the
- * following manner. First the number of nodes \f$N\f$ used by the BDD and then the number of
- * variables \f$V\f$ allocated and the variable ordering in use at the time the BDD was saved. If \f$N\f$
- * and \f$V\f$ are both zero then the BDD is either the constant true or false BDD, indicated by a 1
- * or a 0 as the next integer. In any other case the next \f$N\f$ sets of 4 integers will describe
- * the nodes used by the BDD. Each set consists of first the node number, then the variable
- * number and then the low and high nodes. The nodes \a must be saved in a order such that any
- * low or high node must be defined before it is mentioned.
- * 
- * \see bdd_save
- * \return Zero on success, otherwise an error code from ::bdd.h.
- */
 int bdd_load(FILE *ifile, BDD *root)
 {
    int n, vnum, tmproot;

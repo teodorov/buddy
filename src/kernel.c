@@ -39,9 +39,6 @@
 
 *************************************************************************/
 
-/** \file kernel.c
- */
- 
 #include "config.h"
 #include <stdlib.h>
 #include <string.h>
@@ -58,25 +55,7 @@
 *************************************************************************/
 
 /*=== EXTERNAL VARIABLES FOR PACKAGE USERS =============================*/
-
-/**
- * \ingroup kernel
- * \brief The constant true bdd.
- *
- * This bdd holds the constant true value.
- * 
- * \see bddfalse, bdd_true, bdd_false
- */
 const BDD bddtrue=1;                     /* The constant true bdd */
-
-/**
- * \ingroup kernel
- * \brief The constant false bdd.
- *
- * This bdd holds the constant false value.
- * 
- * \see bddtrue, bdd_true, bdd_false
- */
 const BDD bddfalse=0;                    /* The constant false bdd */
 
 
@@ -150,23 +129,7 @@ static char *errorstrings[BDD_ERRNUM] =
   BDD misc. user operations
 *************************************************************************/
 
-/**
- * \ingroup kernel
- * \brief Initializes the bdd package.
- *
- * This function initiates the bdd package and \em must be called before any bdd operations
- * are done. The argument \a nodesize is the initial number of nodes in the nodetable and \a
- * cachesize is the fixed size of the internal caches. Typical values for \a nodesize are 10000
- * nodes for small test examples and up to 1000000 nodes for large examples. A cache size of
- * 10000 seems to work good even for large examples, but lesser values should do it for smaller
- * examples. The number of cache entries can also be set to depend on the size of the nodetable
- * using a call to ::bdd_setcacheratio. The initial number of nodes is not critical for any bdd
- * operation as the table will be resized whenever there are to few nodes left after a garbage
- * collection. But it does have some impact on the efficency of the operations.
- * 
- * \return If no errors occur then 0 is returned, otherwise a negative error code.
- * \see bdd_done, bdd_resize_hook
- */
+
 int bdd_init(int initnodesize, int cs)
 {
    int n, err;
@@ -237,15 +200,6 @@ int bdd_init(int initnodesize, int cs)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Resets the bdd package.
- *
- * This function frees all memory used by the bdd package and resets the package to it's initial
- * state.
- * 
- * \see bdd_init
- */
 void bdd_done(void)
 {
    /*sanitycheck(); FIXME */
@@ -279,17 +233,6 @@ void bdd_done(void)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Set the number of used bdd variables.
- *
- * This function is used to define the number of variables used in the bdd package. It may be
- * called more than one time, but only to increase the number of variables. The argument \a num
- * is the number of variables to use.
- * 
- * \return Zero on succes, otherwise a negative error code.
- * \see bdd_ithvar, bdd_varnum, bdd_extvarnum
- */
 int bdd_setvarnum(int num)
 {
    int bdv;
@@ -377,15 +320,6 @@ int bdd_setvarnum(int num)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Add extra bdd variables.
- *
- * Extends the current number of allocated BDD variables with \a num extra variables.
- * 
- * \return The old number of allocated variables or a negative error code.
- * \see bdd_setvarnum, bdd_ithvar, bdd_nithvar
- */
 int bdd_extvarnum(int num)
 {
    int start = bddvarnum;
@@ -398,24 +332,6 @@ int bdd_extvarnum(int num)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Set a handler for error conditions.
- *
- * Whenever an error occurs in the bdd package a test is done to see if an error handler is
- * supplied by the user and if such exists then it will be called with an error code in the
- * variable \a errcode. The handler may then print any usefull information and return or exit
- * afterwards. This function sets the handler to be \a handler. If a \c NULL argument is
- * supplied then no calls are made when an error occurs. Possible error codes are found in
- * bdd.h. The default handler is ::bdd_default_errhandler which will use \c abort() to
- * terminate the program. Any handler should be defined like this: 
- * \code
- * void my_error_handler(int errcode) { ... } 
- * \endcode
- * 
- * \return The previous handler.
- * \see bdd_errstring
- */
 bddinthandler bdd_error_hook(bddinthandler handler)
 {
    bddinthandler tmp = err_handler;
@@ -424,19 +340,6 @@ bddinthandler bdd_error_hook(bddinthandler handler)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Clears an error condition in the kernel.
- *
- * The BuDDy kernel may at some point run out of new ROBDD nodes if a maximum limit is set with
- * ::bdd_setmaxnodenum. In this case the current error handler is called and an internal
- * error flag is set. Further calls to BuDDy will always return ::bddfalse. From here BuDDy
- * must either be restarted or ::bdd_clear_error may be called after action is taken to let
- * BuDDy continue. This may not be especially usefull since the default error handler exits
- * the program - other needs may of course exist.
- * 
- * \see bdd_error_hook, bdd_setmaxnodenum
- */
 void bdd_clear_error(void)
 {
    bdderrorcond = 0;
@@ -444,26 +347,6 @@ void bdd_clear_error(void)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Set a handler for garbage collections.
- *
- * Whenever a garbage collection is required, a test is done to see if a handler for this event is
- * supplied by the user and if such exists then it is called, both before and after the garbage
- * collection takes places. This is indicated by an integer flag \a pre passed to the handler,
- * which will be one before garbage collection and zero after garbage collection. This
- * function sets the handler to be \a handler. If a \c NULL argument is supplied then no calls are
- * made when a garbage collection takes place. The argument \a pre indicates pre vs. post
- * garbage collection and the argument \a stat contains information about the garbage
- * collection. The default handler is ::bdd_default_gbchandler. Any handler should be
- * defined like this: 
- * \code
- * void my_gbc_handler(int pre, bddGbcStat *stat) { ... } 
- * \endcode
- * 
- * \return The previous handler.
- * \see bdd_resize_hook, bdd_reorder_hook
- */
 bddgbchandler bdd_gbc_hook(bddgbchandler handler)
 {
    bddgbchandler tmp = gbc_handler;
@@ -472,23 +355,6 @@ bddgbchandler bdd_gbc_hook(bddgbchandler handler)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Set a handler for nodetable resizes.
- *
- * Whenever it is impossible to get enough free nodes by a garbage collection then the node
- * table is resized and a test is done to see if a handler is supllied by the user for this event. If
- * so then it is called with \a oldsize being the old nodetable size and \a newsize being the new
- * nodetable size. This function sets the handler to be \a handler. If a \c NULL argument is
- * supplied then no calls are made when a table resize is done. No default handler is supplied.
- * Any handler should be defined like this: 
- * \code
- * void my_resize_handler(int * oldsize, int newsize) { ... } 
- * \endcode
- * 
- * \return The previous handler.
- * \see bdd_gbc_hook, bdd_reorder_hook, bdd_setminfreenodes
- */
 bdd2inthandler bdd_resize_hook(bdd2inthandler handler)
 {
    bdd2inthandler tmp = handler;
@@ -497,17 +363,6 @@ bdd2inthandler bdd_resize_hook(bdd2inthandler handler)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Set maximum number of nodes used to increase node table.
- *
- * The node table is expanded by doubling the size of the table when no more free nodes can be
- * found, but a maximum for the number of new nodes added can be set with ::bdd_setmaxincrease to \a
- * size nodes. The default is 50000 nodes (1 Mb).
- * 
- * \return The old threshold on succes, otherwise a negative error code.
- * \see bdd_setmaxnodenum, bdd_setminfreenodes
- */
 int bdd_setmaxincrease(int size)
 {
    int old = bddmaxnodeincrease;
@@ -519,20 +374,7 @@ int bdd_setmaxincrease(int size)
    return old;
 }
 
-/**
- * \ingroup kernel
- * \brief Set the maximum available number of bdd nodes.
- *
- * This function sets the maximal number of bdd nodes the package may allocate before it gives
- * up a bdd operation. The argument \a size is the absolute maximal number of nodes there may be
- * allocated for the nodetable. Any attempt to allocate more nodes results in the constant
- * false being returned and the error handler being called until some nodes are deallocated. A
- * value of 0 is interpreted as an unlimited amount. It is \em not possible to specify fewer
- * nodes than there has already been allocated.
- * 
- * \return The old threshold on success, otherwise a negative error code.
- * \see bdd_setmaxincrease, bdd_setminfreenodes
- */
+
 int bdd_setmaxnodenum(int size)
 {
    if (size > bddnodesize  ||  size == 0)
@@ -546,20 +388,6 @@ int bdd_setmaxnodenum(int size)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Set minimum number of nodes to be reclaimed after gbc (as a percentage).
- *
- * Whenever a garbage collection is executed the number of free nodes left are checked to see if
- * a resize of the node table is required. 
- * If (::bdd_getnodenum() - ::bdd_getallocnum())*100/::bdd_getallocnum() <= \a mf then a resize is
- * initiated. The range of \a mf is of course \f$0\ldots 100\f$ and has some influence on how fast the
- * package is. A low number means harder attempts to avoid resizing and saves space, and a high
- * number reduces the time used in garbage collections. The default value is 20.
- * 
- * \return The old threshold on success, otherwise a negative error code.
- * \see bdd_setmaxnodenum, bdd_setmaxincrease
- */
 int bdd_setminfreenodes(int mf)
 {
    int old = minfreenodes;
@@ -572,60 +400,24 @@ int bdd_setminfreenodes(int mf)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Get the number of active nodes in use.
- *
- * Returns the number of nodes in the nodetable that are currently in use. Note that dead nodes
- * that have not been reclaimed yet by a garbage collection are counted as active.
- * 
- * \return The number of nodes.
- * \see bdd_getallocnum, bdd_setmaxnodenum
- */
 int bdd_getnodenum(void)
 {
    return bddnodesize - bddfreenum;
 }
 
 
-/**
- * \ingroup kernel
- * \brief Get the number of allocated nodes.
- *
- * Returns the number of nodes currently allocated. This includes both dead and active nodes.
- * 
- * \return The number of nodes.
- * \see bdd_getnodenum, bdd_setmaxnodenum
- */
 int bdd_getallocnum(void)
 {
    return bddnodesize;
 }
 
 
-/**
- * \ingroup kernel
- * \brief Test whether the package is started or not.
- *
- * This function tests the internal state of the package and returns a status.
- * 
- * \return 1 (true) if the package has been started, otherwise 0.
- * \see bdd_init, bdd_done
- */
 int bdd_isrunning(void)
 {
    return bddrunning;
 }
 
 
-/**
- * \ingroup kernel
- * \brief Returns a text string with version information.
- *
- * This function returns a text string with information about the version of the bdd package.
- * 
- * \see bdd_versionnum
- */
 char *bdd_versionstr(void)
 {
    static char str[] = "BuDDy -  release " PACKAGE_VERSION;
@@ -633,30 +425,12 @@ char *bdd_versionstr(void)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Returns the version number of the bdd package.
- *
- * This function returns the version number of the bdd package. The number is in the range 10-99
- * for version 1.0 to 9.9.
- * 
- * \see bdd_versionstr
- */
 int bdd_versionnum(void)
 {
    return MAJOR_VERSION * 10 + MINOR_VERSION;
 }
 
 
-/**
- * \ingroup kernel
- * \brief Returns some status information about the bdd package.
- *
- * This function acquires information about the internal state of the bdd package. The status
- * information is written into the \a stat argument.
- * 
- * \see bddStat
- */
 void bdd_stats(bddStat *s)
 {
    s->produced = bddproduced;
@@ -671,33 +445,12 @@ void bdd_stats(bddStat *s)
 
 
 
-/**
- * \ingroup kernel
- * \brief Fetch cache access usage.
- *
- * Fetches cache usage information and stores it in \a s. The fields of \a s can be found in the
- * documentation for ::bddCacheStat. This function may or may not be compiled into the BuDDy
- * package - depending on the setup at compile time of BuDDy.
- * 
- * \see bddCacheStat, bdd_printstat
- */
 void bdd_cachestats(bddCacheStat *s)
 {
    *s = bddcachestats;
 }
 
 
-/**
- * \ingroup kernel
- * \brief Print cache statistics.
- *
- * Prints information about the cache performance on standard output (or the supplied file).
- * The information contains the number of accesses to the unique node table, the number of
- * times a node was (not) found there and how many times a hash chain had to traversed. Hit and
- * miss count is also given for the operator caches.
- * 
- * \see bddCacheStat, bdd_cachestats
- */
 void bdd_fprintstat(FILE *ofile)
 {
    bddCacheStat s;
@@ -732,16 +485,6 @@ void bdd_printstat(void)
   Error handler
 *************************************************************************/
 
-/**
- * \ingroup kernel
- * \brief Converts an error code to a string.
- *
- * Converts a negative error code \a errorcode to a descriptive string that can be used for
- * error handling.
- * 
- * \return An error description string if \a e is known, otherwise \c NULL.
- * \see bdd_err_hook
- */
 const char *bdd_errstring(int e)
 {
    e = abs(e);
@@ -771,52 +514,18 @@ int bdd_error(int e)
   BDD primitives
 *************************************************************************/
 
-/**
- * \ingroup kernel
- * \brief Returns the constant true bdd.
- *
- * This function returns the constant true bdd and can freely be used together with the
- * ::bddtrue and ::bddfalse constants.
- * 
- * \return The constant true bdd.
- * \see bdd_false, bddtrue, bddfalse
- */
 BDD bdd_true(void)
 {
    return 1;
 }
 
 
-/**
- * \ingroup kernel
- * \brief Returns the constant false bdd.
- *
- * This function returns the constant false bdd and can freely be used together with the
- * ::bddtrue and ::bddfalse constants.
- * 
- * \return The constant false bdd.
- * \see bdd_true, bddtrue, bddfalse
- */
 BDD bdd_false(void)
 {
    return 0;
 }
 
 
-/**
- * \ingroup kernel
- * \brief Returns a bdd representing the i'th variable.
- *
- * This function is used to get a bdd representing the i'th variable (one node with the children
- * true and false). The requested variable must be in the range define by ::bdd_setvarnum
- * starting with 0 being the first. For ease of use then the bdd returned from ::bdd_ithvar does
- * not have to be referenced counted with a call to ::bdd_addref. The initial variable order is
- * defined by the index \a var that also defines the position in the variable order --
- * variables with lower indices are before those with higher indices.
- * 
- * \return The i'th variable on success, otherwise the constant false bdd.
- * \see bdd_setvarnum, bdd_nithvar, bddtrue, bddfalse
- */
 BDD bdd_ithvar(int var)
 {
    if (var < 0  ||  var >= bddvarnum)
@@ -829,18 +538,6 @@ BDD bdd_ithvar(int var)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Returns a bdd representing the negation of the i'th variable.
- *
- * This function is used to get a bdd representing the negation of the i'th variable (one node
- * with the children false and true). The requested variable must be in the range defined by
- * ::bdd_setvarnum starting with 0 being the first. For ease of use then the bdd returned from
- * ::bdd_nithvar does not have to be referenced counted with a call to ::bdd_addref.
- * 
- * \return The negated i'th variable on success, otherwise the constant false bdd.
- * \see bdd_setvarnum, bdd_ithvar, bddtrue, bddfalse
- */
 BDD bdd_nithvar(int var)
 {
    if (var < 0  ||  var >= bddvarnum)
@@ -853,29 +550,12 @@ BDD bdd_nithvar(int var)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Returns the number of defined variables.
- *
- * This function returns the number of variables defined by a call to ::bdd_setvarnum.
- * 
- * \return The number of defined variables.
- * \see bdd_setvarnum, bdd_ithvar
- */
 int bdd_varnum(void)
 {
    return bddvarnum;
 }
 
 
-/**
- * \ingroup info
- * \brief Gets the variable labeling the bdd.
- *
- * Gets the variable labeling the bdd \a r.
- * 
- * \return The variable number.
- */
 int bdd_var(BDD root)
 {
    CHECK(root);
@@ -886,15 +566,6 @@ int bdd_var(BDD root)
 }
 
 
-/**
- * \ingroup info
- * \brief Gets the false branch of a bdd.
- *
- * Gets the false branch of the bdd \a r.
- * 
- * \return The bdd of the false branch.
- * \see bdd_high
- */
 BDD bdd_low(BDD root)
 {
    CHECK(root);
@@ -905,15 +576,6 @@ BDD bdd_low(BDD root)
 }
 
 
-/**
- * \ingroup info
- * \brief Gets the true branch of a bdd.
- *
- * Gets the true branch of the bdd \a r.
- * 
- * \return The bdd of the true branch.
- * \see bdd_low
- */
 BDD bdd_high(BDD root)
 {
    CHECK(root);
@@ -1042,17 +704,6 @@ void bdd_gbc(void)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Increases the reference count on a node.
- *
- * Reference counting is done on externaly referenced nodes only and the count for a specific
- * node \a r can and must be increased using this function to avoid loosing the node in the next
- * garbage collection.
- * 
- * \see bdd_delref
- * \return The BDD node \a r.
- */
 BDD bdd_addref(BDD root)
 {
    if (root < 2  ||  !bddrunning)
@@ -1067,17 +718,6 @@ BDD bdd_addref(BDD root)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Decreases the reference count on a node.
- *
- * Reference counting is done on externaly referenced nodes only and the count for a specific
- * node \a r can and must be decreased using this function to make it possible to reclaim the node
- * in the next garbage collection.
- * 
- * \see bdd_addref
- * \return The BDD node \a r.
- */
 BDD bdd_delref(BDD root)
 {
    if (root < 2  ||  !bddrunning)
@@ -1355,19 +995,6 @@ void bdd_checkreorder(void)
   Variable sets
 *************************************************************************/
 
-/**
- * \ingroup kernel
- * \brief Returns an integer representation of a variable set.
- *
- * Scans a variable set \a r and copies the stored variables into an integer array of variable
- * numbers. The argument \a varset is the address of an integer pointer where the array is stored and
- * \a varnum is a pointer to an integer where the number of elements are stored. It is the user's
- * responsibility to make sure the array is deallocated by a call to \c free(v). The numbers
- * returned are guaranteed to be in ascending order.
- * 
- * \see bdd_makeset
- * \return Zero on success, otherwise a negative error code.
- */
 int bdd_scanset(BDD r, int **varset, int *varnum)
 {
    int n, num;
@@ -1395,19 +1022,6 @@ int bdd_scanset(BDD r, int **varset, int *varnum)
 }
 
 
-/**
- * \ingroup kernel
- * \brief Builds a bdd variable set from an integer array.
- *
- * Reads a set of variable numbers from the integer array \a varset which must hold exactly \a varnum
- * integers and then builds a BDD representing the variable set. The BDD variable set is
- * represented as the conjunction of all the variables in their positive form and may just as
- * well be made that way by the user. The user should keep a reference to the returned BDD instead
- * of building it every time the set is needed.
- * 
- * \see bdd_scanset
- * \return A BDD variable set.
- */
 BDD bdd_makeset(int *varset, int varnum)
 {
    int v, res=1;
