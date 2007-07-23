@@ -951,10 +951,10 @@ extern BDD      bdd_not(BDD r);
    <TR> <TD>::bddop_and</TD>    <TD>logical and (\f$A \wedge B\f$)</TD> <TD>[0,0,0,1]</TD> <TD>\&</TD> </TR> 
    <TR> <TD>::bddop_xor</TD>    <TD>logical xor (\f$A \oplus B\f$)</TD> <TD>[0,1,1,0]</TD> <TD>\^</TD> </TR> 
    <TR> <TD>::bddop_or</TD>     <TD>logical or (\f$A \vee B\f$)</TD>    <TD>[0,1,1,1]</TD> <TD>|</TD> </TR> 
-   <TR> <TD>::bddop_nand</TD>   <TD>logical not-and</TD>                <TD>[1,1,1,0] </TR>
-   <TR> <TD>::bddop_nor</TD>    <TD>logical not-or</TD>                 <TD>[1,0,0,0] </TR> 
+   <TR> <TD>::bddop_nand</TD>   <TD>logical not-and</TD>                <TD>[1,1,1,0] <TD></TD> </TR>
+   <TR> <TD>::bddop_nor</TD>    <TD>logical not-or</TD>                 <TD>[1,0,0,0] <TD></TD> </TR> 
    <TR> <TD>::bddop_imp</TD>    <TD>implication (\f$A \Rightarrow B\f$)</TD> <TD>[1,1,0,1]</TD> <TD>\>\></TD> </TR> 
-   <TR> <TD>::bddop_biimp</TD>  <TD>bi-implication (\f$A \Leftrightarrow B\f$)</TD> <TD>[1,0,0,1]</TD> </TR>
+   <TR> <TD>::bddop_biimp</TD>  <TD>bi-implication (\f$A \Leftrightarrow B\f$)</TD> <TD>[1,0,0,1]</TD> <TD></TD> </TR>
    <TR> <TD>::bddop_diff</TD>   <TD>set difference (\f$A \setminus B\f$)</TD> <TD>[0,0,1,0]</TD> <TD>-</TD> </TR> 
    <TR> <TD>::bddop_less</TD>   <TD>less than (\f$A < B\f$)</TD>        <TD>[0,1,0,0]</TD> <TD>\<</TD> </TR> 
    <TR> <TD>::bddop_invimp</TD> <TD>reverse implication (\f$A \Leftarrow B\f$)</TD> <TD>[1,0,1,1]</TD> <TD>\<\<</TD> </TR> 

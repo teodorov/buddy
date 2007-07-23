@@ -1,11 +1,11 @@
 /**
- * \defgroup info info
- * \defgroup kernel kernel
- * \defgroup fdd fdd
- * \defgroup bvec bvec
- * \defgroup fileio fileio
- * \defgroup operator operator
- * \defgroup reorder reorder
+ * \defgroup info Information on BDDs
+ * \defgroup kernel Kernel BDD operations and data structures
+ * \defgroup fdd Finite domain variable blocks
+ * \defgroup bvec Boolean vectors
+ * \defgroup fileio File input\/output
+ * \defgroup operator BDD operators
+ * \defgroup reorder Variable reordering
  *
  * \mainpage BuDDy: A BDD package
  * \section section0 Programming with BuDDy 
@@ -119,7 +119,7 @@
  * ::bdd_printset that prints a specific BDD as a list of elements in
  * a set (all paths ending in the true terminal).
 
- * \subsection  More Examples
+ * \subsection subsection1 More Examples
 
  * More complex examples can be found in the \c buddy/examples directory.
 
@@ -201,7 +201,7 @@
  * swap. Other reordering functions are ::bdd_autoreorder_times,
  * ::bdd_reorder_verbose, ::bdd_sizeprobe_hook and ::bdd_reorder_hook.
 
- * \section section3 Error Handling
+ * \subsection section3 Error Handling
 
  * If an error occurs then a check is done to see if there is any error
  * handler defined and if so it is called with the error code of
