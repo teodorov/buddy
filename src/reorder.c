@@ -39,6 +39,7 @@
 #include <time.h>
 #include <math.h>
 #include <assert.h>
+#include "config.h"
 #include "kernel.h"
 #include "bddtree.h"
 #include "imatrix.h"
