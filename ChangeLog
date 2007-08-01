@@ -1,3 +1,16 @@
+2007-08-01  nikos-g <nikos-g@users.sourceforge.net>
+	* Regression test bddcalc fails when using --enable-cache-stats, as 
+	binary outputs cache statistics that are then diffed with expected result.
+	Removed automatic printout of cache stats. The keyword 'cache' can still be
+	used witch bddcalc for explicit cache stats output.
+
+2007-08-01  nikos-g <nikos-g@users.sourceforge.net>
+	* Added #include "config.h" to several source files so that --enable-cache-stats
+	gives correct stats when used.
+
+2007-08-01  nikos-g <nikos-g@users.sourceforge.net>
+	* Converted documentation to Doxygen.
+
 2004-08-03  haimcohen  <haimcohen@HaimicoLinux>
 
 	* src/kernel.c, src/kernel.h, src/prime.c, src/reorder.c:
@@ -179,7 +192,7 @@
 
 2004-06-25  haimcohen  <haimcohen@HaimicoLinux>
 
-	* README: Change Haim Cohen´s Email to the one in Source Forge
+	* README: Change Haim Cohenï¿½s Email to the one in Source Forge
 
 	* src/depend.inf, src/makefile, src/tree.c: Initial import
 

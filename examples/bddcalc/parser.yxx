@@ -240,7 +240,10 @@ int main(int ac, char **av)
    bdd_setcacheratio(2);
    yyparse();
 
+   /* commented out to allow regression tests work with
+      and without --enable-cache-stats in configure
    bdd_printstat();
+   */
    bdd_done();
 
    return 0;
