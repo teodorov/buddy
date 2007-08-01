@@ -83,6 +83,7 @@ int main() {
    FILE* fdd_out = fopen( "fdd_out.txt", "w" ) ;
    cout << "print to file:" << endl ;
    fdd_fprintset( fdd_out, T ) ;	
+   fprintf( fdd_out, "\n" ) ;   
    fclose( fdd_out ) ;
    system( "cat fdd_out.txt" ) ; // oh my, i am so lazy ...
    cout << endl ;
