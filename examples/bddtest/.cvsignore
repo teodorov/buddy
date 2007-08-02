@@ -1,5 +1,5 @@
 Makefile
 Makefile.in
 .deps
-bddtest
 .libs
+bddtest
