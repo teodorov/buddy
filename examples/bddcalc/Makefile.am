@@ -14,7 +14,7 @@ EXTRA_DIST = \
 
 AM_YFLAGS = -d
 
-BUILT_SOURCES = parser.h
+BUILT_SOURCES = parser.hxx
 
 check_PROGRAMS = bddcalc
 bddcalc_SOURCES = \

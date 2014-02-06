@@ -28,6 +28,7 @@
 ========================================================================*/
 
 #include <string>
+#include <cstdlib>
 #include "bdd.h"
 #include "bvec.h"
 

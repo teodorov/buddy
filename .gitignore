@@ -37,4 +37,5 @@ Makefile
 /examples/money/money
 /examples/queen/queen
 /examples/solitare/solitare
-
+/.cproject
+/.project
