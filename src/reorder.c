@@ -881,7 +881,10 @@ static int mark_roots(void)
    }
    
    if ((extroots=(int*)(malloc(sizeof(int)*extrootsize))) == NULL)
+   {
+      free(dep);
       return bdd_error(BDD_MEMORY);
+   }
 
    iactmtx = imatrixNew(bddvarnum);
 

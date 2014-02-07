@@ -62,6 +62,7 @@ imatrix* imatrixNew(int size)
       {
 	 for (m=0 ; m<n ; m++)
 	    free(mtx->rows[m]);
+	 free(mtx->rows);
 	 free(mtx);
 	 return NULL;
       }

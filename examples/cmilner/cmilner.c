@@ -287,6 +287,6 @@ int main(int argc, char** argv)
    
    bdd_done();
    
-   return 0;
+   exit(0);
 }
 

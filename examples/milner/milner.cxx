@@ -172,6 +172,6 @@ int main(int argc, char** argv)
    //bdd_printstat();
    //cout << "Nodenum: " << bdd_getnodenum() << endl;
    bdd_done();
-   return 0;
+   exit(0);
 }
 

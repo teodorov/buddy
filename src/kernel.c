@@ -269,19 +269,20 @@ int bdd_setvarnum(int num)
    }
    else
    {
-      if ((bddvarset=(BDD*)realloc(bddvarset,sizeof(BDD)*num*2)) == NULL)
+      BDD *tmp_ptr = (BDD*)realloc(bddvarset,sizeof(BDD)*num*2);
+      if (tmp_ptr == NULL)
 	 return bdd_error(BDD_MEMORY);
-      if ((bddlevel2var=(int*)realloc(bddlevel2var,sizeof(int)*(num+1))) == NULL)
-      {
-	 free(bddvarset);
+      bddvarset = tmp_ptr;
+
+      int *tmp_ptr2 = (int*)realloc(bddlevel2var,sizeof(int)*(num+1));
+      if (tmp_ptr2 == NULL)
 	 return bdd_error(BDD_MEMORY);
-      }
-      if ((bddvar2level=(int*)realloc(bddvar2level,sizeof(int)*(num+1))) == NULL)
-      {
-	 free(bddvarset);
-	 free(bddlevel2var);
+      bddlevel2var = tmp_ptr2;
+
+      tmp_ptr2 = (int*)realloc(bddvar2level,sizeof(int)*(num+1));
+      if (tmp_ptr2 == NULL)
 	 return bdd_error(BDD_MEMORY);
-      }
+      bddvar2level = tmp_ptr2;
    }
 
    if (bddrefstack != NULL)
