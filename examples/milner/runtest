@@ -1,6 +1,10 @@
-#!/bin/tcsh -f
+#!/bin/sh
 
-foreach N ( 4 10 16 20 30 50 64 80 )
+cd $(dirname $0)
+
+for N in 4 10 16 20 30 50 64 80; do
     echo "Running with N = $N" >> result
     ./milner $N | egrep -v '^Garbage collection' >> result
-end
+done
+
+if cmp -s expected result; then rm result; else exit $?; fi

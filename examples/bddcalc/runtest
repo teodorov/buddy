@@ -1,7 +1,10 @@
-#!/bin/tcsh -f
+#!/bin/sh
 
-foreach calfile ( `ls {.,examples}/*.cal` )
+cd $(dirname $0)
+
+for calfile in ./*.cal examples/*.cal; do
     echo "Running with cal file : $calfile" >> result
     ./bddcalc $calfile | egrep -v '^Garbage collection' >> result
-end
+done
 
+if cmp -s expected result; then rm result; else exit $?; fi

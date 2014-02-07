@@ -1,6 +1,10 @@
-#!/bin/tcsh -f
+#!/bin/sh
 
-foreach N ( 4 8 9 10 )
+cd $(dirname $0)
+
+for N in 4 8 9 10; do
     echo "Running with N = $N" >> result
     ./queen $N | egrep -v '^Garbage collection' >> result
-end
+done
+
+if cmp -s expected result; then rm result; else exit $?; fi

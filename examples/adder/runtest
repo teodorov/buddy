@@ -1,8 +1,12 @@
-#!/bin/tcsh -f
+#!/bin/sh
 
-foreach N ( 4 8 11 14 )
-    foreach reorder (  win2 win2ite win3 win3ite sift siftite adder )
+cd $(dirname $0)
+
+for N in 4 8 11 14; do
+    for reorder in win2 win2ite win3 win3ite sift siftite adder; do 
 	echo "Running with N = $N, reordering type=$reorder" >> result
 	./adder $N $reorder | egrep -v '^Garbage collection' >> result
-    end
-end
+    done
+done
+
+if cmp -s expected result; then rm result; else exit $?; fi

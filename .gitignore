@@ -19,6 +19,8 @@ Makefile
 *.o
 *.lo
 *.la
+*.log
+*.trs
 .libs
 .deps
 /src/bddtest

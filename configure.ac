@@ -3,6 +3,8 @@ AC_INIT([buddy], [2.4])
 AC_CONFIG_AUX_DIR([tools])
 AM_INIT_AUTOMAKE([foreign nostdinc no-define 1.7.3])
 
+AM_SILENT_RULES([yes])
+
 MAJOR_VERSION=`echo "$VERSION" | sed -e 's/^\([[0-9]]*\)\.[[0-9]]*.*$/\1/'`
 MINOR_VERSION=`echo "$VERSION" | sed -e 's/^[[0-9]]*\.\([[0-9]]*\).*$/\1/'`
 AC_DEFINE_UNQUOTED([MAJOR_VERSION], [$MAJOR_VERSION], [BuDDy's major version.])
