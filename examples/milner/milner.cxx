@@ -160,17 +160,17 @@ int main(int argc, char** argv)
    bdd T = transitions(t,tp,h,hp,c,cp);
    bdd R = reachable_states(I,T);
 
-   bddStat s;
-   bdd_stats(&s);
+   //bddStat s;
+   //bdd_stats(&s);
 
    cout << "SatCount R = " << bdd_satcount(R) << endl;
    cout << "Calc       = " << (double)N*pow(2.0,1.0+N)*pow(2.0,3.0*N) << endl;
-   cout << "Nodes      = " << s.produced << endl;
+   //cout << "Nodes      = " << s.produced << endl;
    cout << endl << "Number of nodes in T is " << bdd_nodecount( T ) << endl;
    cout << "Number of nodes in R is " << bdd_nodecount( R ) << endl << endl;
 
    //bdd_printstat();
-   cout << "Nodenum: " << bdd_getnodenum() << endl;
+   //cout << "Nodenum: " << bdd_getnodenum() << endl;
    bdd_done();
    return 0;
 }
