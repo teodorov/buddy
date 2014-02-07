@@ -24,3 +24,6 @@ bddcalc_SOURCES = \
  parser.yxx \
  parser_.h \
  slist.h
+
+CXXFLAGS=-Wno-write-strings
+
