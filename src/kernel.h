@@ -158,7 +158,8 @@ extern bddCacheStat bddcachestats;
 
    /* Stacking for garbage collector */
 #define INITREF    bddrefstacktop = bddrefstack
-#define PUSHREF(a) *(bddrefstacktop++) = (a)
+/* #define PUSHREF(a) *(bddrefstacktop++) = (a) */
+static inline int PUSHREF(int a) { return *(bddrefstacktop++) = a; }
 #define READREF(a) *(bddrefstacktop-(a))
 #define POPREF(a)  bddrefstacktop -= (a)
 
